@@ -44,6 +44,12 @@ def homepage():
     return FileResponse(index, media_type="text/html")
 
 
+@app.get("/sources")
+def sources_page():
+    index = Path(__file__).resolve().parents[2] / "web" / "sources.html"
+    return FileResponse(index, media_type="text/html")
+
+
 @app.get("/health")
 def health():
     return {"status": "ok", "service": "afondo-check", "version": "0.1.0"}
