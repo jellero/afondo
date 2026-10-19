@@ -36,12 +36,29 @@ Senza la variabile, l'endpoint di revisione resta disabilitato. Non esporre un a
 - Valutazione deterministica delle affermazioni solo su prove accettate
 - Stato **dati insufficienti** quando non è giustificato un punteggio
 - Storico locale SQLite e test automatici
+- Preview dell'estensione Chrome con permesso `activeTab` (vedi `extension/README.md`)
 
 ## Limitazioni intenzionali
 
 Non esegue crawling di siti terzi, non traduce automaticamente, non verifica in autonomia le affermazioni, non attribuisce punteggi a persone o testate. Queste funzioni richiedono fonti lecite, validazione del metodo, gestione dei diritti e controlli più solidi.
 
 Leggi `docs/METHODOLOGY.md` e `docs/ROADMAP.md`.
+
+## Estensione Chrome (sviluppo locale)
+
+Dopo aver avviato il backend, apri `chrome://extensions`, abilita la modalità sviluppatore, scegli **Carica estensione non pacchettizzata** e seleziona la cartella `extension/`. Apri un articolo, clicca sull'icona AFONDO e su **Analizza questa pagina**. Il testo visibile viene inviato al server locale solo su richiesta e l'estensione apre la scheda corrispondente nella dashboard.
+
+## Esempi API
+
+```bash
+curl -s http://127.0.0.1:8000/health
+# Specifica il JSON con titolo e testo di almeno 60 caratteri:
+curl -s -X POST http://127.0.0.1:8000/api/v1/articles \\
+  -H 'Content-Type: application/json' \\
+  -d '{"title":"Notizia di esempio","text":"Prima affermazione da approfondire con prove pertinenti e controllate. Seconda affermazione sufficientemente lunga da analizzare separatamente."}'
+```
+
+Le prove inviate a `POST /api/v1/claims/{claim_id}/evidence` restano `pending`. Il revisore, dopo aver verificato l'evidenza, può usare `POST /api/v1/evidence/{evidence_id}/review` con intestazione `X-Review-Token`; consulta `/docs` per tutti gli schemi. La revisione non è esposta nella UI di questa demo.
 
 ## Docker
 
