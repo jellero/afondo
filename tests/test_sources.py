@@ -36,6 +36,9 @@ def grant(tmp_path, monkeypatch, source_id="rainews-it", adapter="feed", endpoin
     if endpoint:
         values["endpoint"] = endpoint
         values["adapter"] = adapter
+        if adapter == "json_api":
+            values["api_schema"] = {"items_path": "response.results",
+                                    "title_field": "webTitle", "url_field": "webUrl"}
     path = tmp_path / "grants.json"
     path.write_text(json.dumps({"sources": {source_id: values}}), encoding="utf-8")
     monkeypatch.setenv("AFONDO_SOURCE_GRANTS", str(path))
