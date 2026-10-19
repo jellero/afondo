@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AFONDO Lens</title>
+  <style>
+    body{margin:0;width:340px;background:#0b1019;color:#eaf5fa;font-family:system-ui,sans-serif;padding:20px;line-height:1.45}
+    h1{font-size:23px;margin:0;letter-spacing:.08em}
+    strong{color:#48d2d2}
+    p{font-size:13px;color:#b4c6d7}
+    button{background:#48d2d2;color:#09232a;border:0;border-radius:10px;padding:12px 14px;font-weight:800;width:100%;cursor:pointer}
+    button:disabled{opacity:.5;cursor:not-allowed}
+    #status{margin-top:14px;min-height:40px;font-size:12px;overflow-wrap:anywhere}
+    a{color:#48d2d2;text-decoration:underline}
+    small{display:block;margin-top:12px;color:#92aabf;font-size:11px}
+  </style>
+</head>
+<body>
+  <h1>AFONDO<strong>.</strong></h1>
+  <p>Vai oltre il titolo. Analizza il testo visibile della scheda attiva e trova le affermazioni da verificare.</p>
+  <button id="check">Analizza questa pagina →</button>
+  <div id="status" role="status" aria-live="polite"></div>
+  <small>Il contenuto viene inviato al server locale solo dopo il tuo clic. Non vengono aggirati paywall o restrizioni del sito.</small>
+  <script src="popup.js"></script>
+</body>
+</html>
