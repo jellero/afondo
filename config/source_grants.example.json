@@ -1,0 +1,16 @@
+{
+  "_description": "Template. Copy to source_grants.json ONLY after verifying permission/license for the exact AFONDO use. The default file is intentionally absent.",
+  "sources": {
+    "_example_source_id_only": {
+      "permission_recorded": false,
+      "allowed_uses": [],
+      "permission_reference": "Signed license or official written permission reference",
+      "approved_by": "",
+      "reviewed_on": "2026-10-19",
+      "expires_on": "2026-12-31",
+      "approved_host": "example.org",
+      "endpoint": "https://example.org/approved-feed.xml",
+      "adapter": "feed"
+    }
+  }
+}
