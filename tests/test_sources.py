@@ -166,3 +166,16 @@ def test_json_api_can_be_configured_but_is_never_enabled_implicitly(monkeypatch,
     assert source["enabled"] is True
     assert safe_source_url(source) == endpoint
     # The grant in this test is mock data. It must not be used for a real request.
+
+
+def test_public_source_hides_private_partner_endpoint(monkeypatch, tmp_path):
+    from afondo.source_registry import public_source
+    grant(tmp_path, monkeypatch, source_id="guardian-en", adapter="json_api",
+          endpoint="https://partner.example.org/private?key=do-not-expose")
+    source = get_source("guardian-en")
+    published = public_source(source)
+    assert published["enabled"] is True
+    assert published["has_discovery_endpoint"] is True
+    assert "discovery_url" not in published
+    assert "_grant" not in published
+    assert "do-not-expose" not in str(published)
