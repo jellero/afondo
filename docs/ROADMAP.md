@@ -11,6 +11,18 @@
 - [x] Test unitari e API, CI
 - [x] Docker Compose locale
 
+## Milestone 0.5 — Source Registry / discovery
+
+- [x] Catalogo di 20 sorgenti italiane, internazionali e istituzionali
+- [x] API lettura sorgenti e feed di metadati
+- [x] Parser RSS/Atom/RDF e JSON API configurabile
+- [x] Grant esplicito per fonte, controllo endpoint HTTPS e token amministrativo
+- [x] Discovery metadata con deduplica per URL, ETag/Last-Modified e cooldown
+- [x] Dashboard `/sources`
+- [ ] Accordi e permessi reali per ciascuna fonte
+- [ ] Verifica in rete degli endpoint e delle API partner
+- [ ] Ingestion scheduler quando i permessi sono disponibili
+
 ## Milestone 1 — Motore serio di verifica
 
 - [ ] PostgreSQL, Alembic e storage dei documenti con provenienza
