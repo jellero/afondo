@@ -14,6 +14,7 @@ from afondo.db import connection, initialize
 from afondo.extract import extract_candidates
 from afondo.schemas import ArticleCreate, EvidenceCreate, EvidenceReview
 from afondo.scoring import score_article, score_claim
+from afondo.source_api import router as source_router
 
 
 def timestamp() -> str:
@@ -32,6 +33,9 @@ app = FastAPI(
     description="Prototipo trasparente: estrazione candidata e verifica basata su prove revisionate.",
     lifespan=lifespan,
 )
+
+
+app.include_router(source_router)
 
 
 @app.get("/")
