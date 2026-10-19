@@ -21,7 +21,19 @@ Per impostazione predefinita **0 fonti sono attive**. Questo evita di confondere
 4. Inserisci un grant valido: `permission_recorded=true`, `allowed_uses=["metadata_discovery"]`, `permission_reference`, `approved_by`, `reviewed_on`, `approved_host` e facoltativamente `expires_on`.
    - **Docker Compose:** salva il grant in `data/source_grants.json` (già montato nel container). Per installazione Python locale usa il percorso `config/source_grants.json` oppure imposta `AFONDO_SOURCE_GRANTS`.\n5. Per fonti prive di feed puntuale, configura `endpoint` con URL HTTPS esatto e `adapter: "feed"` o `"json_api"`.
 6. Aggiungi un segreto d'ambiente `AFONDO_INGEST_TOKEN` diverso dal token usato per la revisione delle prove. Non commettere grants, autorizzazioni riservate o chiavi API in Git.
-7. Esegui `POST /api/v1/sources/{source_id}/sync` con `X-Ingest-Token`. È un'azione esplicita: **non esiste uno scheduler automatico abilitato**.
+7. Esegui `POST /api/v1/sources/{source_id}/sync` con `X-Ingest-Token`, oppure il comando CLI per tutte le fonti autorizzate. È un'azione esplicita: **non esiste uno scheduler automatico abilitato**.
+
+#### CLI per tutte le fonti autorizzate
+
+```bash
+python -m afondo.sync_sources --dry-run
+python -m afondo.sync_sources --once
+python -m afondo.sync_sources --once --source dw-en
+# con Docker Compose (se il container è attivo):
+docker compose exec afondo python -m afondo.sync_sources --dry-run
+```
+
+`--dry-run` **non effettua richieste alle testate**. `--once` raggiunge soltanto gli endpoint di fonti con grant completo, rispettando il cooldown di 15 minuti. Per l'esecuzione periodica, configurare un job `cron`, systemd timer o scheduler esterno **solo dopo** l'approvazione dei permessi e della rete di egress. Per un uso continuativo aggiungere osservabilità e limitazione della concorrenza.
 
 Il campo `approved_host` deve corrispondere **esattamente** all'hostname del feed/API finale. HTTPS porta 443, no redirect automatici; i redirect devono essere verificati e l'URL finale registrato esplicitamente. Usare anche policy egress sulla rete in produzione.
 
