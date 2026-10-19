@@ -1,0 +1,415 @@
+{
+  "catalog_version": 1,
+  "updated_on": "2026-10-19",
+  "purpose": "Discovery candidates for AFONDO; NOT an authorization list",
+  "global_auto_scan_enabled": false,
+  "required_before_activating": [
+    "Check current provider terms and applicable law",
+    "Verify rights for the specific processing, especially AI/TDM",
+    "Confirm endpoint validity and robots policies",
+    "Define rate limit, caching, retention and attributions",
+    "Run human review on sample results"
+  ],
+  "sources": [
+    {
+      "id": "rainews-it",
+      "name": "RaiNews",
+      "type": "newsroom",
+      "priority": "pilot",
+      "regions": [
+        "IT"
+      ],
+      "languages": [
+        "it"
+      ],
+      "site": "https://www.rainews.it/",
+      "discovery": {
+        "method": "rss",
+        "url": "https://www.rainews.it/rss/tutti",
+        "confirmed_by": "https://www.rainews.it/rss",
+        "endpoint_observed_by": "https://feeder.co/it/discover/91c5b6ecdd/rainews-it-rss-tutti"
+      },
+      "rights": "review_required",
+      "notes": "Feed attivo segnalato anche da tracker RSS. Nessuna autorizzazione a estrarre e utilizzare articoli completi inferita dal feed."
+    },
+    {
+      "id": "dw-en",
+      "name": "Deutsche Welle",
+      "type": "newsroom",
+      "priority": "pilot",
+      "regions": [
+        "DE",
+        "EU",
+        "GLOBAL"
+      ],
+      "languages": [
+        "en"
+      ],
+      "site": "https://www.dw.com/",
+      "discovery": {
+        "method": "rss",
+        "url": "https://rss.dw.com/rdf/rss-en-all",
+        "confirmed_by": "https://feeder.co/de/discover/site/dw.com"
+      },
+      "rights": "review_required",
+      "notes": "Feed RSS internazionale, utile per confronti multi-Paese."
+    },
+    {
+      "id": "bbc-en",
+      "name": "BBC News",
+      "type": "newsroom",
+      "priority": "pilot_after_permission",
+      "regions": [
+        "GB",
+        "GLOBAL"
+      ],
+      "languages": [
+        "en"
+      ],
+      "site": "https://www.bbc.com/news",
+      "discovery": {
+        "method": "rss",
+        "url": "https://feeds.bbci.co.uk/news/world/rss.xml",
+        "confirmed_by": "https://feeder.co/knowledge-base/rss-content/bbc-rss-feeds/"
+      },
+      "rights": "permission_required_for_business",
+      "notes": "Termini BBC richiedono permesso per uso commerciale di RSS e licenza per metadati."
+    },
+    {
+      "id": "euronews-en",
+      "name": "Euronews",
+      "type": "newsroom",
+      "priority": "pilot_after_permission",
+      "regions": [
+        "EU",
+        "GLOBAL"
+      ],
+      "languages": [
+        "en",
+        "it"
+      ],
+      "site": "https://www.euronews.com/",
+      "discovery": {
+        "method": "rss",
+        "url": "https://www.euronews.com/rss?format=mrss&level=theme&name=news",
+        "confirmed_by": "https://www.euronews.com/widgets"
+      },
+      "rights": "permission_required_for_reuse",
+      "notes": "RSS pubblico ufficiale; condizioni d'uso limitano raccolta massiva e riutilizzo; non trattare il feed come licenza AI."
+    },
+    {
+      "id": "france24-en",
+      "name": "France 24",
+      "type": "newsroom",
+      "priority": "pilot",
+      "regions": [
+        "FR",
+        "EU",
+        "AFRICA",
+        "GLOBAL"
+      ],
+      "languages": [
+        "en"
+      ],
+      "site": "https://www.france24.com/en/",
+      "discovery": {
+        "method": "rss",
+        "url": "https://www.france24.com/en/france/rss",
+        "confirmed_by": "https://feeder.co/discover/192431f199/en-france-rss"
+      },
+      "rights": "review_required",
+      "notes": "Feed Francia segnalato funzionante dal tracker; trovare e verificare feed mondo prima dell'ampliamento."
+    },
+    {
+      "id": "agencia-brasil",
+      "name": "Agência Brasil",
+      "type": "news_agency",
+      "priority": "pilot",
+      "regions": [
+        "BR",
+        "LATAM"
+      ],
+      "languages": [
+        "pt",
+        "en",
+        "es"
+      ],
+      "site": "https://agenciabrasil.ebc.com.br/",
+      "discovery": {
+        "method": "rss_catalog",
+        "url": "https://agenciabrasil.ebc.com.br/feed/",
+        "confirmed_by": "https://agenciabrasil.ebc.com.br/feed/"
+      },
+      "rights": "review_ai_use_and_attribution",
+      "notes": "L'agenzia autorizza riproduzioni giornalistiche con attribuzione in determinate condizioni; uso AI e commerciale da valutare a parte."
+    },
+    {
+      "id": "il-post",
+      "name": "Il Post",
+      "type": "newsroom",
+      "priority": "editorial_diversity",
+      "regions": [
+        "IT"
+      ],
+      "languages": [
+        "it"
+      ],
+      "site": "https://www.ilpost.it/",
+      "discovery": {
+        "method": "site_or_feed_to_confirm",
+        "url": null,
+        "confirmed_by": "https://www.ilpost.it/2010/04/20/i-feed-dove-sono-i-feed/"
+      },
+      "rights": "review_required",
+      "notes": "Link storico ai feed; endpoint attuale non confermato. In attesa di verifica tecnica e legale."
+    },
+    {
+      "id": "aljazeera-en",
+      "name": "Al Jazeera English",
+      "type": "newsroom",
+      "priority": "editorial_diversity",
+      "regions": [
+        "MIDDLE_EAST",
+        "AFRICA",
+        "GLOBAL"
+      ],
+      "languages": [
+        "en"
+      ],
+      "site": "https://www.aljazeera.com/",
+      "discovery": {
+        "method": "rss_catalog",
+        "url": "https://www.aljazeera.com/rss",
+        "confirmed_by": "https://www.aljazeera.com/rss"
+      },
+      "rights": "review_required",
+      "notes": "Amplia copertura su MENA; endpoint RSS e autorizzazioni operative da validare."
+    },
+    {
+      "id": "the-conversation-en",
+      "name": "The Conversation",
+      "type": "newsroom",
+      "priority": "context",
+      "regions": [
+        "GLOBAL"
+      ],
+      "languages": [
+        "en"
+      ],
+      "site": "https://theconversation.com/",
+      "discovery": {
+        "method": "site",
+        "url": null,
+        "confirmed_by": "https://tc.tc-dev.net/au/republishing-and-media"
+      },
+      "rights": "conditional_republication_not_ai_license",
+      "notes": "La ripubblicazione CC BY-ND è soggetta a condizioni; traduzioni e modifiche richiedono ulteriore valutazione."
+    },
+    {
+      "id": "ansa-it",
+      "name": "ANSA",
+      "type": "news_agency",
+      "priority": "license_outreach",
+      "regions": [
+        "IT",
+        "GLOBAL"
+      ],
+      "languages": [
+        "it",
+        "en"
+      ],
+      "site": "https://www.ansa.it/",
+      "discovery": {
+        "method": "rss_catalog",
+        "url": "https://www.ansa.it/sito/static/ansa_rss.html",
+        "confirmed_by": "https://www.ansa.it/sito/static/ansa_rss.html"
+      },
+      "rights": "explicit_permission_needed",
+      "notes": "ANSA limita RSS al non-commerciale in RSS reader e ne vieta l'uso per ripubblicare titoli su siti. Contattare ANSA per AFONDO."
+    },
+    {
+      "id": "reuters-en",
+      "name": "Reuters",
+      "type": "news_agency",
+      "priority": "license_outreach",
+      "regions": [
+        "GLOBAL"
+      ],
+      "languages": [
+        "en"
+      ],
+      "site": "https://www.reuters.com/",
+      "discovery": {
+        "method": "licensed_api",
+        "url": "https://reutersagency.com/content-delivery-platforms/reuters-connect/",
+        "confirmed_by": "https://www.reutersconnect.com/plans-and-pricing"
+      },
+      "rights": "explicit_contract_needed",
+      "notes": "Licenza e API Reuters Connect; uso commerciale di RSS e scraping vietato senza autorizzazione secondo i termini."
+    },
+    {
+      "id": "ap-en",
+      "name": "Associated Press",
+      "type": "news_agency",
+      "priority": "license_outreach",
+      "regions": [
+        "US",
+        "GLOBAL"
+      ],
+      "languages": [
+        "en"
+      ],
+      "site": "https://apnews.com/",
+      "discovery": {
+        "method": "licensed_api",
+        "url": "https://developer.ap.org/ap-media-api/",
+        "confirmed_by": "https://api.ap.org/media/v/docs/Getting_Started_API.htm"
+      },
+      "rights": "explicit_contract_needed",
+      "notes": "AP Media API usa accesso alle risorse in base al contratto. Sandbox non permette la pubblicazione."
+    },
+    {
+      "id": "guardian-en",
+      "name": "The Guardian",
+      "type": "newsroom",
+      "priority": "license_outreach",
+      "regions": [
+        "GB",
+        "GLOBAL"
+      ],
+      "languages": [
+        "en"
+      ],
+      "site": "https://www.theguardian.com/",
+      "discovery": {
+        "method": "licensed_api",
+        "url": "https://open-platform.theguardian.com/",
+        "confirmed_by": "https://open-platform.theguardian.com/access/"
+      },
+      "rights": "commercial_ai_agreement_needed",
+      "notes": "Developer non commerciale; uso AI/TDM ha restrizioni esplicite, valutare piano commerciale e accordo dedicato."
+    },
+    {
+      "id": "africanews-en",
+      "name": "Africanews",
+      "type": "newsroom",
+      "priority": "coverage_expansion",
+      "regions": [
+        "AFRICA"
+      ],
+      "languages": [
+        "en"
+      ],
+      "site": "https://www.africanews.com/",
+      "discovery": {
+        "method": "site",
+        "url": null,
+        "confirmed_by": "https://www.euronews.com/terms-and-conditions"
+      },
+      "rights": "permission_required_for_reuse",
+      "notes": "Prospettiva africana; feed/API e licenze da verificare. Condizioni condivise con Euronews."
+    },
+    {
+      "id": "nhk-world-en",
+      "name": "NHK World-Japan",
+      "type": "newsroom",
+      "priority": "coverage_expansion",
+      "regions": [
+        "JP",
+        "ASIA"
+      ],
+      "languages": [
+        "en"
+      ],
+      "site": "https://www3.nhk.or.jp/nhkworld/en/news/",
+      "discovery": {
+        "method": "site",
+        "url": null,
+        "confirmed_by": null
+      },
+      "rights": "review_required",
+      "notes": "Candidato per Asia-Pacifico, da verificare feed, robots e condizioni prima dell'integrazione."
+    },
+    {
+      "id": "istat-it",
+      "name": "ISTAT",
+      "type": "primary_evidence",
+      "priority": "pilot",
+      "regions": [
+        "IT"
+      ],
+      "languages": [
+        "it"
+      ],
+      "site": "https://www.istat.it/",
+      "discovery": {
+        "method": "rss_catalog",
+        "url": "https://www.istat.it/altri-servizi/feed-rss/",
+        "confirmed_by": "https://www.istat.it/altri-servizi/feed-rss/"
+      },
+      "rights": "review_required",
+      "notes": "Fonte primaria su demografia, occupazione, prezzi. Non trattare il comunicato stampa come verifica di tutto il racconto giornalistico."
+    },
+    {
+      "id": "eurostat-en",
+      "name": "Eurostat",
+      "type": "primary_evidence",
+      "priority": "pilot",
+      "regions": [
+        "EU"
+      ],
+      "languages": [
+        "en"
+      ],
+      "site": "https://ec.europa.eu/eurostat/",
+      "discovery": {
+        "method": "rss",
+        "url": "https://ec.europa.eu/eurostat/api/dissemination/catalogue/rss/en/statistics-update.rss",
+        "confirmed_by": "https://ec.europa.eu/eurostat/web/user-guides/data-browser/api-data-access/api-detailed-guidelines/catalogue-api/rss"
+      },
+      "rights": "review_required",
+      "notes": "RSS ufficiale per gli aggiornamenti del catalogo statistico, non feed di tutti gli articoli. Integrare successivamente API dataset."
+    },
+    {
+      "id": "nasa-jpl-en",
+      "name": "NASA JPL",
+      "type": "primary_evidence",
+      "priority": "pilot",
+      "regions": [
+        "US",
+        "GLOBAL"
+      ],
+      "languages": [
+        "en"
+      ],
+      "site": "https://www.jpl.nasa.gov/",
+      "discovery": {
+        "method": "rss",
+        "url": "https://www.jpl.nasa.gov/feeds/news/",
+        "confirmed_by": "https://www.jpl.nasa.gov/rss/"
+      },
+      "rights": "review_required",
+      "notes": "Notizie primarie per scienza e missioni. Verificare condizioni anche per immagini e materiali terzi."
+    },
+    {
+      "id": "un-news-en",
+      "name": "UN News",
+      "type": "primary_evidence",
+      "priority": "pilot",
+      "regions": [
+        "GLOBAL"
+      ],
+      "languages": [
+        "en"
+      ],
+      "site": "https://news.un.org/en/",
+      "discovery": {
+        "method": "rss_catalog",
+        "url": "https://www.un.org/en/department-global-communications/news-media",
+        "confirmed_by": "https://www.un.org/en/department-global-communications/news-media"
+      },
+      "rights": "review_required",
+      "notes": "Fonti dirette ONU, dichiarazioni e dati ufficiali; dichiarazione istituzionale non equivale a fatto indipendentemente accertato."
+    }
+  ]
+}
