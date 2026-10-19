@@ -50,6 +50,12 @@ def sources_page():
     return FileResponse(index, media_type="text/html")
 
 
+@app.get("/news")
+def discovery_page():
+    page = Path(__file__).resolve().parents[2] / "web" / "discoveries.html"
+    return FileResponse(page, media_type="text/html")
+
+
 @app.get("/health")
 def health():
     return {"status": "ok", "service": "afondo-check", "version": "0.1.0"}
