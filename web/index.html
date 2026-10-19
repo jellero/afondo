@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="AFONDO Check: esplora affermazioni e prove senza punteggi inventati.">
+  <title>AFONDO — Go deeper. Know better.</title>
+  <style>
+    :root {color-scheme:dark;--bg:#0b1019;--panel:#151d2a;--panel2:#1b2635;--border:#2c3b50;--text:#f0f5fa;--muted:#a6bacd;--accent:#48d2d2;--warn:#ffcc7b;--radius:16px;}
+    *{box-sizing:border-box}
+    body{margin:0;background:radial-gradient(circle at 80% 0%,#183049 0%,transparent 42%),var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.55;min-height:100vh;}
+    a{color:var(--accent);text-underline-offset:3px}
+    header{border-bottom:1px solid var(--border);background:#0b1019cb;backdrop-filter:blur(12px);position:sticky;top:0;z-index:2}
+    .bar{max-width:1120px;margin:auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .brand{font-weight:900;letter-spacing:.12em;font-size:22px;color:#fff}
+    .tag{color:var(--muted);font-size:12px}
+    main{max-width:1120px;margin:auto;padding:54px 24px 100px}
+    h1{font-size:clamp(32px,5vw,58px);max-width:760px;line-height:1.08;letter-spacing:-.045em;margin:0 0 20px}
+    h1 em{color:var(--accent);font-style:normal}
+    .lead{color:var(--muted);max-width:730px;font-size:17px;margin:0 0 34px}
+    .layout{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(260px,.7fr);gap:22px;align-items:start}
+    .panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:24px;box-shadow:0 12px 38px #0002}
+    .panel h2{margin:0 0 14px;font-size:20px;letter-spacing:-.02em}
+    .panel h3{margin:20px 0 12px;font-size:16px}
+    label{display:block;font-size:13px;font-weight:700;margin-top:16px;margin-bottom:6px;color:#d5e4ef}
+    input,textarea,select{width:100%;padding:12px 14px;color:var(--text);background:#0d1622;border:1px solid #40526a;border-radius:10px;font:inherit}
+    input:focus,textarea:focus,select:focus{outline:2px solid var(--accent);outline-offset:2px}
+    textarea{min-height:190px;resize:vertical}
+    .two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .button{border:0;border-radius:10px;background:var(--accent);color:#06262d;padding:12px 20px;font-weight:800;font-size:14px;cursor:pointer}
+    .button:disabled{opacity:.55;cursor:not-allowed}
+    .button.secondary{border:1px solid var(--border);background:var(--panel2);color:var(--text)}
+    .muted{color:var(--muted);font-size:13px}
+    .notice{border-left:3px solid var(--warn);padding:10px 12px;margin:16px 0;background:#ffcc7b0a;color:#f5dab0;font-size:13px}
+    .item{border:1px solid var(--border);border-radius:12px;margin-top:14px;padding:16px;background:#111b28}
+    .item p{margin:8px 0}
+    .pill{font-size:11px;font-weight:800;border:1px solid #4f6a81;color:#b8d9eb;border-radius:99px;padding:4px 9px;display:inline-block}
+    .pill.supported{border-color:#41bfa6;color:#86e9cf}
+    .pill.refuted{border-color:#ec8383;color:#ffc1c1}
+    .pill.disputed{border-color:#ffcd71;color:#ffdf9f}
+    .evidence{padding:9px 0;border-top:1px solid var(--border);font-size:13px;overflow-wrap:anywhere}
+    .row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .split{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .recent{width:100%;text-align:left;color:var(--text);border:1px solid var(--border);background:#0c1621;border-radius:9px;padding:12px;margin-bottom:10px;cursor:pointer}
+    .recent small{display:block;color:var(--muted);margin-top:3px}
+    .summary{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0}
+    .summary div{background:#0c1621;border:1px solid var(--border);padding:12px;border-radius:10px}
+    .summary strong{display:block;font-size:22px}
+    .summary span{font-size:12px;color:var(--muted)}
+    footer{max-width:1120px;margin:auto;padding:20px 24px;color:var(--muted);border-top:1px solid var(--border);font-size:12px}
+    .hide{display:none}
+    @media(max-width:820px){.layout{grid-template-columns:1fr}main{padding:35px 16px 70px}.bar{padding:14px 16px}.two{grid-template-columns:1fr}.panel{padding:18px}}
+  </style>
+</head>
+<body>
+  <header><div class="bar"><span class="brand">AFONDO<span style="color:var(--accent)">.</span></span><span class="tag">CHECK / PROTOTYPE 0.1</span></div></header>
+  <main>
+    <h1>Don't just read. <em>Go deeper.</em></h1>
+    <p class="lead">Scomponi un articolo in affermazioni e collega ogni conclusione a prove consultabili. Quando non ci sono verifiche sufficienti, AFONDO non inventa un risultato.</p>
+    <div class="layout">
+      <section class="panel">
+        <h2>Analizza un testo</h2>
+        <p class="muted">Incolla solo contenuti che hai il diritto di elaborare. L'URL serve per attribuire la fonte, non avvia download automatici.</p>
+        <form id="article-form">
+          <label for="title">Titolo *</label>
+          <input id="title" maxlength="300" minlength="5" required placeholder="Titolo dell'articolo">
+          <label for="url">URL dell'articolo (facoltativo)</label>
+          <input id="url" type="url" placeholder="https://...">
+          <div class="two">
+            <div><label for="outlet">Testata</label><input id="outlet" maxlength="200" placeholder="Nome testata"></div>
+            <div><label for="author">Autore</label><input id="author" maxlength="200" placeholder="Nome autore"></div>
+          </div>
+          <label for="language">Lingua</label>
+          <select id="language"><option value="it">Italiano</option><option value="en">English</option></select>
+          <label for="text">Testo da analizzare *</label>
+          <textarea id="text" minlength="60" maxlength="30000" required placeholder="Incolla almeno 60 caratteri. Il prototipo individua frasi candidate, non stabilisce automaticamente se sono vere."></textarea>
+          <p class="notice">Le frasi estratte sono soltanto candidate alla verifica. La classificazione avviene esclusivamente con prove accettate da un revisore.</p>
+          <div class="row"><button class="button" id="submit" type="submit">Estrai le affermazioni →</button><span id="feedback" class="muted" aria-live="polite"></span></div>
+        </form>
+      </section>
+      <aside class="panel">
+        <h2>Analisi recenti</h2>
+        <div id="recent"><p class="muted">Caricamento...</p></div>
+        <h3>Come funziona</h3>
+        <p class="muted">1. Registra l'articolo.<br>2. Estrae frasi candidate.<br>3. Collega documenti e fonti.<br>4. Un revisore valida le prove.<br>5. Solo allora calcola un indicatore sperimentale.</p>
+        <p class="muted"><a href="/docs">Documentazione API ↗</a></p>
+      </aside>
+    </div>
+    <section id="analysis" class="panel hide" style="margin-top:22px" aria-live="polite"></section>
+  </main>
+  <footer>AFONDO Check è un MVP di ricerca. Non esprime giudizi automatici su persone, testate o opinioni. Nessuna fonte viene scaricata dal server.</footer>
+<script>
+  "use strict";
+  const $ = id => document.getElementById(id);
+  const el = (tag, className, text) => {
+    const n = document.createElement(tag);
+    if (className) n.className = className;
+    if (text !== undefined) n.textContent = String(text);
+    return n;
+  };
+  const api = async (url, options) => {
+    const response = await fetch(url, options);
+    const value = await response.json();
+    if (!response.ok) throw Error(typeof value.detail === "string" ? value.detail : "Richiesta non valida");
+    return value;
+  };
+  const statusName = {
+    supported: "Supportata da prove",
+    refuted: "Contraddetta da prove",
+    disputed: "Prove contrastanti",
+    insufficient_evidence: "Prove insufficienti"
+  };
+
+  async function refreshList() {
+    const holder = $("recent");
+    try {
+      const data = await api("/api/v1/articles");
+      holder.replaceChildren();
+      if (!data.items.length) holder.append(el("p", "muted", "Nessuna analisi registrata."));
+      for (const item of data.items) {
+        const button = el("button", "recent");
+        button.type = "button";
+        button.append(el("strong", "", item.title));
+        button.append(el("small", "", [item.outlet, item.language].filter(Boolean).join(" · ")));
+        button.addEventListener("click", () => loadArticle(item.id));
+        holder.append(button);
+      }
+    } catch (err) { holder.textContent = err.message; }
+  }
+
+  async function loadArticle(id) {
+    const result = $("analysis");
+    result.classList.remove("hide");
+    result.replaceChildren(el("p", "muted", "Caricamento..."));
+    try { renderArticle(await api("/api/v1/articles/" + encodeURIComponent(id))); }
+    catch (err) { result.replaceChildren(el("p", "notice", err.message)); }
+  }
+
+  function renderArticle(data) {
+    const root = $("analysis");
+    root.replaceChildren();
+    root.append(el("h2", "", data.title));
+    if (data.source_url) {
+      const a = el("a", "", "Apri articolo originale ↗");
+      a.href = data.source_url; a.target = "_blank"; a.rel = "noopener noreferrer";
+      root.append(a);
+    }
+    root.append(el("p", "muted", [data.outlet, data.author, data.language, "estrazione euristica"].filter(Boolean).join(" · ")));
+    const info = el("div", "summary");
+    for (const [value, label] of [
+      [data.assessment.claim_count, "Frasi candidate"],
+      [data.assessment.resolved_claims, "Verifiche risolte"],
+      [data.assessment.score === null ? "N/D" : data.assessment.score + "%", "Supporto alle affermazioni"]
+    ]) {
+      const box = el("div");
+      box.append(el("strong", "", value), el("span", "", label));
+      info.append(box);
+    }
+    root.append(info);
+    root.append(el("p", "notice", data.assessment.warning));
+    if (!data.claims.length) root.append(el("p", "muted", "Nessuna frase candidata rilevata."));
+    data.claims.forEach((claim, index) => {
+      const card = el("section", "item");
+      const top = el("div", "split");
+      top.append(el("strong", "", "Affermazione " + (index + 1)));
+      top.append(el("span", "pill " + claim.assessment.status, statusName[claim.assessment.status]));
+      card.append(top, el("p", "", claim.text));
+      for (const evidence of claim.evidence) {
+        const box = el("div", "evidence");
+        const a = el("a", "", evidence.url);
+        a.href = evidence.url; a.target = "_blank"; a.rel = "noopener noreferrer";
+        box.append(a, el("div", "muted", evidence.stance + " · " + evidence.review_status + " · " + evidence.note));
+        card.append(box);
+      }
+      const details = el("details");
+      const summary = el("summary", "muted", "Aggiungi una prova da sottoporre a revisione");
+      details.append(summary);
+      const form = el("form");
+      const sourceUrl = el("input");
+      sourceUrl.type = "url"; sourceUrl.placeholder = "https://fonte-originale..."; sourceUrl.required = true;
+      sourceUrl.setAttribute("aria-label", "URL della prova");
+      const sourceGroup = el("input");
+      sourceGroup.placeholder = "Identificativo fonte indipendente (es. istat.it)";
+      sourceGroup.minLength = 2; sourceGroup.maxLength = 180; sourceGroup.required = true;
+      sourceGroup.setAttribute("aria-label", "Gruppo indipendente");
+      const note = el("textarea");
+      note.placeholder = "Perché questa fonte è pertinente?"; note.minLength = 10; note.maxLength = 3000; note.required = true;
+      note.style.minHeight = "90px"; note.setAttribute("aria-label", "Motivazione della prova");
+      const stance = el("select");
+      for (const value of ["supports", "refutes", "unclear"]) {
+        const option = el("option", "", value); option.value = value; stance.append(option);
+      }
+      stance.setAttribute("aria-label", "Posizione della prova");
+      const kind = el("select");
+      for (const value of ["primary", "secondary"]) {
+        const option = el("option", "", value); option.value = value; kind.append(option);
+      }
+      kind.setAttribute("aria-label", "Tipo di fonte");
+      const save = el("button", "button secondary", "Invia prova (in attesa di revisione)");
+      save.type = "submit";
+      const message = el("p", "muted");
+      for (const control of [sourceUrl, sourceGroup, stance, kind, note, save, message]) {
+        control.style.marginTop = "10px"; form.append(control);
+      }
+      form.addEventListener("submit", async event => {
+        event.preventDefault(); save.disabled = true; message.textContent = "Invio...";
+        try {
+          await api("/api/v1/claims/" + claim.id + "/evidence", {
+            method: "POST", headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+              url: sourceUrl.value, source_group: sourceGroup.value,
+              source_kind: kind.value, stance: stance.value, note: note.value
+            })
+          });
+          await loadArticle(data.id);
+        } catch (err) { message.textContent = err.message; save.disabled = false; }
+      });
+      details.append(form); card.append(details); root.append(card);
+    });
+    root.scrollIntoView({behavior:"smooth",block:"start"});
+  }
+
+  $("article-form").addEventListener("submit", async event => {
+    event.preventDefault();
+    $("submit").disabled = true; $("feedback").textContent = "Elaborazione...";
+    try {
+      const payload = {
+        title: $("title").value, text: $("text").value, language: $("language").value,
+        source_url: $("url").value || null, author: $("author").value || null,
+        outlet: $("outlet").value || null
+      };
+      const data = await api("/api/v1/articles", {
+        method:"POST", headers: {"Content-Type":"application/json"},
+        body:JSON.stringify(payload)
+      });
+      renderArticle(data);
+      $("feedback").textContent = "Articolo registrato.";
+      await refreshList();
+    } catch (err) { $("feedback").textContent = "Errore: " + err.message; }
+    finally { $("submit").disabled = false; }
+  });
+  refreshList();
+</script>
+</body>
+</html>
