@@ -4,7 +4,7 @@ services:
     ports:
       - "127.0.0.1:8000:8000"
     environment:
-      AFONDO_DB_PATH: /app/data/afondo.sqlite3
+      AFONDO_DB_PATH: /app/data/afondo.sqlite3\n      AFONDO_SOURCE_GRANTS: /app/data/source_grants.json\n      AFONDO_INGEST_TOKEN: ${AFONDO_INGEST_TOKEN:-}
     volumes:
       - ./data:/app/data
     restart: unless-stopped
