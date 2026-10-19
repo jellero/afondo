@@ -75,9 +75,9 @@ def _configured(source: dict, grant: object) -> dict:
     rights_checked_at = None
     if isinstance(grant, dict):
         rights_checked_at = grant.get("reviewed_on")
-        conditions = [
+        allowed = grant.get("allowed_uses")\n        allowed = allowed if isinstance(allowed, list) else []\n        conditions = [
             grant.get("permission_recorded") is True,
-            "metadata_discovery" in grant.get("allowed_uses", []),
+            "metadata_discovery" in allowed,
             isinstance(grant.get("permission_reference"), str)
             and len(grant["permission_reference"].strip()) >= 8,
             isinstance(grant.get("approved_by"), str)
