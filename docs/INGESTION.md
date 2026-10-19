@@ -19,7 +19,7 @@ Per impostazione predefinita **0 fonti sono attive**. Questo evita di confondere
 2. Conserva riferimenti verificabili (contratto/autorizzazione/termini in vigore) e data di verifica.
 3. Copia `config/source_grants.example.json` in `config/source_grants.json` e crea una chiave con l'ID della fonte.
 4. Inserisci un grant valido: `permission_recorded=true`, `allowed_uses=["metadata_discovery"]`, `permission_reference`, `approved_by`, `reviewed_on`, `approved_host` e facoltativamente `expires_on`.
-5. Per fonti prive di feed puntuale, configura `endpoint` con URL HTTPS esatto e `adapter: "feed"` o `"json_api"`.
+   - **Docker Compose:** salva il grant in `data/source_grants.json` (già montato nel container). Per installazione Python locale usa il percorso `config/source_grants.json` oppure imposta `AFONDO_SOURCE_GRANTS`.\n5. Per fonti prive di feed puntuale, configura `endpoint` con URL HTTPS esatto e `adapter: "feed"` o `"json_api"`.
 6. Aggiungi un segreto d'ambiente `AFONDO_INGEST_TOKEN` diverso dal token usato per la revisione delle prove. Non commettere grants, autorizzazioni riservate o chiavi API in Git.
 7. Esegui `POST /api/v1/sources/{source_id}/sync` con `X-Ingest-Token`. È un'azione esplicita: **non esiste uno scheduler automatico abilitato**.
 
@@ -52,7 +52,7 @@ Non attivare l'esempio senza un titolo d'uso documentato.
 | `GET /api/v1/sources/{id}` | Stato di una fonte | Pubblico locale |
 | `GET /api/v1/discoveries?source_id=...` | Metadati rilevati, URL e pubblicazione | Pubblico locale |
 | `POST /api/v1/sources/{id}/sync` | Discovery metadata esplicita | Token amministrativo e permessi documentati |
-| `GET /sources` | Dashboard fonti | Pubblico locale |
+| `GET /sources` | Dashboard fonti | Pubblico locale |\n| `GET /news` | Metadati acquisiti e collegamenti alla fonte | Pubblico locale |
 
 ```bash
 export AFONDO_INGEST_TOKEN="$(python -c 'import secrets;print(secrets.token_urlsafe(32))')"
