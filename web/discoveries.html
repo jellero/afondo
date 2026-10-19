@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AFONDO — Notizie individuate</title>
+<style>
+  :root{color-scheme:dark;--bg:#0b1019;--panel:#151d2a;--border:#30425b;--accent:#4fd6d4;--muted:#a3bbce}
+  *{box-sizing:border-box}body{margin:0;background:var(--bg);color:#eff7fa;font:15px/1.55 system-ui,sans-serif}
+  header{border-bottom:1px solid var(--border)}.bar{max-width:1000px;padding:16px 20px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:18px}
+  .brand{font-weight:900;font-size:22px;letter-spacing:.09em}.brand span{color:var(--accent)}
+  a{color:var(--accent)}main{max-width:1000px;margin:auto;padding:46px 20px 80px}
+  h1{font-size:clamp(28px,5vw,50px);margin:0 0 8px}.muted{color:var(--muted);font-size:13px}
+  .notice{border:1px solid #79613d;border-radius:12px;background:#2b261b;color:#f3ddb3;padding:16px;margin:24px 0}
+  select{padding:12px;background:var(--panel);border:1px solid var(--border);border-radius:10px;color:#eef5fa;font:inherit;max-width:100%;width:340px}
+  .entry{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:21px;margin:12px 0}
+  .entry h2{font-size:19px;margin:0 0 8px}.entry .meta{margin-top:10px;color:var(--muted);font-size:12px}
+  .empty{border:1px dashed var(--border);border-radius:14px;padding:28px;margin-top:24px;color:var(--muted)}
+</style>
+</head>
+<body>
+<header><div class="bar"><a href="/" style="text-decoration:none;color:#fff" class="brand">AFONDO<span>.</span></a><nav><a href="/sources">Fonti</a> · <a href="/">Analizza</a></nav></div></header>
+<main>
+<h1>Notizie individuate</h1>
+<p class="muted">Metadati provenienti esclusivamente da fonti autorizzate e sincronizzate. Ogni titolo conduce al sito originale.</p>
+<div class="notice">AFONDO non ripubblica il testo degli articoli, non traduce né verifica automaticamente questi metadati. Il catalogo può essere vuoto finché non sono state acquisite le autorizzazioni necessarie.</div>
+<label for="source" class="muted">Scegli una fonte</label><br>
+<select id="source"><option value="">Tutte le fonti</option></select>
+<div id="count" class="muted" style="margin-top:20px" role="status">Caricamento...</div>
+<section id="articles" aria-label="Notizie scoperte"></section>
+</main>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const query=new URLSearchParams(location.search);
+const requested=query.get("source_id")||"";
+const element=(tag,css,text)=>{
+ const x=document.createElement(tag);if(css)x.className=css;
+ if(text!==undefined)x.textContent=String(text);return x;
+};
+async function refresh(){
+ const params=new URLSearchParams({limit:"100"});
+ const selected=$("source").value;
+ if(selected) params.set("source_id",selected);
+ try{
+  const response=await fetch("/api/v1/discoveries?"+params);
+  if(!response.ok)throw Error("Richiesta non riuscita");
+  const {items}=await response.json();
+  $("count").textContent=items.length+" notizie individuate (massimo 100 risultati)";
+  const target=$("articles");target.replaceChildren();
+  if(!items.length){target.append(element("div","empty","Nessuna notizia disponibile: non sono ancora state sincronizzate fonti autorizzate."));return;}
+  for(const item of items){
+   const card=element("article","entry"), title=element("h2");
+   const link=element("a","",item.title);
+   link.href=item.url;link.rel="noopener noreferrer";link.target="_blank";
+   title.append(link);card.append(title);
+   card.append(element("div","meta",(item.source_id||"")+" · "+(item.published_at||"Data non specificata")));
+   target.append(card);
+  }
+ }catch(error){$("count").textContent="Errore: "+error.message;}
+}
+fetch("/api/v1/sources").then(r=>r.json()).then(({items})=>{
+ for(const source of items){
+  const option=element("option","",source.name);
+  option.value=source.id;$("source").append(option);
+ }
+ if(items.some(s=>s.id===requested))$("source").value=requested;
+ refresh();
+}).catch(()=>{$("count").textContent="Impossibile caricare le fonti"});
+$("source").addEventListener("change",refresh);
+</script>
+</body>
+</html>
