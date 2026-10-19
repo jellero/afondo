@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AFONDO — Fonti</title>
+  <style>
+    :root{color-scheme:dark;--bg:#0b1019;--panel:#151d2a;--border:#30425b;--text:#edf5fd;--muted:#a3bbce;--accent:#4fd6d4}
+    *{box-sizing:border-box}body{margin:0;background:#0b1019;color:var(--text);font-family:system-ui,sans-serif;line-height:1.5}
+    header{border-bottom:1px solid var(--border)}.bar{max-width:1160px;margin:auto;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
+    .brand{font-weight:900;font-size:22px;letter-spacing:.09em}.brand span{color:var(--accent)}
+    a{color:var(--accent)}main{max-width:1160px;margin:auto;padding:45px 24px 90px}
+    h1{font-size:clamp(30px,4vw,54px);line-height:1.1;margin:0 0 16px}p{max-width:850px}
+    .lead{color:var(--muted)}.controls{display:flex;gap:12px;margin:28px 0 15px;flex-wrap:wrap}
+    input,select{color:var(--text);background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:12px 14px;font:inherit}
+    input{flex:1;min-width:220px}.count{color:var(--muted);font-size:13px;margin-bottom:15px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(285px,1fr));gap:14px}
+    .card{border:1px solid var(--border);border-radius:14px;background:var(--panel);padding:20px}
+    .row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .badge{font-size:11px;border-radius:40px;padding:4px 10px;background:#344256;color:#d7e7fa}
+    .badge.ready{background:#164b48;color:#a8fff1}.name{font-weight:800;font-size:18px;margin:14px 0 5px}
+    .small{color:var(--muted);font-size:12px}.meta{margin-top:14px;border-top:1px solid var(--border);padding-top:12px}
+    .warn{border-left:3px solid #f6bf70;padding:13px 18px;background:#302719;color:#f3dbb2;border-radius:4px;margin:24px 0}
+    .view{display:inline-block;margin-top:12px;font-size:13px}
+    @media(max-width:600px){main{padding:30px 16px 60px}.bar{padding:14px 16px}}
+  </style>
+</head>
+<body>
+  <header><div class="bar"><a href="/" style="text-decoration:none;color:white" class="brand">AFONDO<span>.</span></a><a href="/">← Dashboard</a></div></header>
+  <main>
+    <h1>Le fonti di AFONDO</h1>
+    <p class="lead">Testate, agenzie, fonti primarie e verificatori indipendenti: un registro unico per costruire un'informazione confrontabile e fondata sulle prove.</p>
+    <div class="warn">Una fonte registrata <strong>non è automaticamente autorizzata alla scansione</strong>. AFONDO blocca qualsiasi acquisizione automatica senza una registrazione esplicita dei permessi. Non viene scaricato il testo integrale degli articoli.</div>
+    <div class="controls">
+      <input id="search" placeholder="Cerca una fonte, un Paese o una lingua..." aria-label="Cerca fonte">
+      <select id="type" aria-label="Filtra tipologia"><option value="">Tutte le categorie</option><option value="newsroom">Giornali ed emittenti</option><option value="news_agency">Agenzie di stampa</option><option value="primary_evidence">Fonti primarie</option><option value="factcheck_reference">Fact-checking</option></select>
+      <select id="state" aria-label="Filtra disponibilità"><option value="">Tutti gli stati</option><option value="ready">Configurate e autorizzate</option><option value="pending">Da autorizzare</option></select>
+    </div>
+    <div class="count" id="count" role="status"></div>
+    <section id="sources" class="grid" aria-label="Catalogo delle fonti"></section>
+  </main>
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+let sources = [];
+const labels = {newsroom:"Testata / emittente",news_agency:"Agenzia di stampa",
+primary_evidence:"Fonte primaria",factcheck_reference:"Fact-checking"};
+function make(tag, css, text) {
+  const n = document.createElement(tag);
+  if (css) n.className = css;
+  if (text !== undefined) n.textContent = String(text);
+  return n;
+}
+function render(){
+  const q=$("search").value.trim().toLowerCase(), type=$("type").value, state=$("state").value;
+  const matched=sources.filter(s=>(!type||s.type===type)&&(!state||(state==="ready"?s.enabled:!s.enabled))
+    &&[s.name,...s.regions,...s.languages].join(" ").toLowerCase().includes(q));
+  $("count").textContent=`${matched.length} / ${sources.length} fonti · ${sources.filter(s=>s.enabled).length} autorizzate per discovery`;
+  const root=$("sources");root.replaceChildren();
+  for(const s of matched){
+    const card=make("article","card"),row=make("div","row");
+    row.append(make("span","small",labels[s.type]||s.type));
+    row.append(make("span","badge"+(s.enabled?" ready":""),s.enabled?"Discovery abilitata":"In attesa"));
+    card.append(row,make("div","name",s.name),make("div","small",s.regions.join(" · ")+" / "+s.languages.join(", ")));
+    const meta=make("div","meta");
+    meta.append(make("div","small","Connessione: "+s.adapter));
+    meta.append(make("div","small","Permessi: "+s.permission_status));
+    if(s.sync?.last_sync) meta.append(make("div","small","Ultimo tentativo: "+s.sync.last_sync+" / "+s.sync.status));
+    if(s.sync?.items_count) meta.append(make("div","small","Elementi rilevati: "+s.sync.items_count));
+    card.append(meta);
+    const a=make("a","view","Apri fonte originale ↗");
+    a.href=s.site;a.target="_blank";a.rel="noopener noreferrer";card.append(a);
+    root.append(card);
+  }
+}
+["search","type","state"].forEach(id=>$(id).addEventListener(id==="search"?"input":"change",render));
+fetch("/api/v1/sources").then(r=>{if(!r.ok)throw Error("Errore API");return r.json()})
+  .then(data=>{sources=data.items||[];render()})
+  .catch(e=>{$("count").textContent="Impossibile caricare le fonti: "+e.message});
+</script>
+</body>
+</html>
