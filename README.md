@@ -40,7 +40,7 @@ Senza la variabile, l'endpoint di revisione resta disabilitato. Non esporre un a
 
 ## Registro fonti e metadata discovery
 
-Il catalogo di 20 sorgenti è integrato nel backend. Apri [`/sources`](http://127.0.0.1:8000/sources) oppure `GET /api/v1/sources` per visualizzare tipologia, metodo di discovery e stato del permesso. Le sorgenti includono RaiNews, DW, BBC, Euronews, France 24, Agência Brasil, Al Jazeera, Il Post, ANSA, AP, Reuters, Guardian, Africanews, NHK, The Conversation, ISTAT, Eurostat, NASA/JPL, UN News e Pagella Politica.
+Il catalogo di 20 sorgenti è integrato nel backend. Apri [`/sources`](http://127.0.0.1:8000/sources) e [`/news`](http://127.0.0.1:8000/news) per i metadati individuati, oppure `GET /api/v1/sources` per visualizzare tipologia, metodo di discovery e stato del permesso. Le sorgenti includono RaiNews, DW, BBC, Euronews, France 24, Agência Brasil, Al Jazeera, Il Post, ANSA, AP, Reuters, Guardian, Africanews, NHK, The Conversation, ISTAT, Eurostat, NASA/JPL, UN News e Pagella Politica.
 
 **Nessuna sorgente viene scaricata per impostazione predefinita.** Il registry non è una licenza. Solo dopo aver acquisito permessi espliciti, si configura un grant separato e si attiva manualmente `POST /api/v1/sources/{id}/sync` con token amministrativo: vedi [`docs/INGESTION.md`](docs/INGESTION.md).
 
@@ -48,7 +48,7 @@ I connettori RSS/Atom/RDF e JSON configurabile salvano esclusivamente titolo, UR
 
 ## Limitazioni intenzionali
 
-Non esegue crawling di siti terzi, non traduce automaticamente, non verifica in autonomia le affermazioni, non attribuisce punteggi a persone o testate. Queste funzioni richiedono fonti lecite, validazione del metodo, gestione dei diritti e controlli più solidi.
+Non esegue crawling di pagine HTML o acquisizione di articoli integrali; il modulo discovery opzionale registra solo metadati da feed/API autorizzati. Non traduce automaticamente, non verifica in autonomia le affermazioni, non attribuisce punteggi a persone o testate. Queste funzioni richiedono fonti lecite, validazione del metodo, gestione dei diritti e controlli più solidi.
 
 Leggi `docs/METHODOLOGY.md`, `docs/ROADMAP.md` e [`docs/SOURCES.md`](docs/SOURCES.md). Il catalogo di 20 fonti candidate è in [`config/source_candidates.json`](config/source_candidates.json): ogni scansione automatica resta disabilitata finché i permessi non sono verificati.
 
