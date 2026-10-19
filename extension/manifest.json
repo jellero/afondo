@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "AFONDO Lens — Local Preview",
+  "short_name": "AFONDO Lens",
+  "version": "0.1.0",
+  "description": "Analizza su richiesta l'articolo aperto usando il motore locale AFONDO.",
+  "permissions": ["activeTab", "scripting"],
+  "host_permissions": ["http://127.0.0.1:8000/*"],
+  "action": {
+    "default_title": "AFONDO: verifica la notizia",
+    "default_popup": "popup.html"
+  }
+}
