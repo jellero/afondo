@@ -44,6 +44,8 @@ Il catalogo di 20 sorgenti è integrato nel backend. Apri [`/sources`](http://12
 
 **Nessuna sorgente viene scaricata per impostazione predefinita.** Il registry non è una licenza. Solo dopo aver acquisito permessi espliciti, si configura un grant separato e si attiva manualmente `POST /api/v1/sources/{id}/sync` con token amministrativo: vedi [`docs/INGESTION.md`](docs/INGESTION.md).
 
+Il comando `python -m afondo.sync_sources --dry-run` elenca le fonti senza accedere alla rete; `--once` avvia una singola sincronizzazione solo per quelle esplicitamente autorizzate. Per il setup consultare `docs/INGESTION.md`.
+
 I connettori RSS/Atom/RDF e JSON configurabile salvano esclusivamente titolo, URL e data di pubblicazione. Per API proprietarie servono endpoint, contratto e integrazioni specifiche. È una pipeline di scoperta, non scraping di articoli completi.
 
 ## Limitazioni intenzionali
