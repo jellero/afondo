@@ -42,7 +42,7 @@ Senza la variabile, l'endpoint di revisione resta disabilitato. Non esporre un a
 
 Non esegue crawling di siti terzi, non traduce automaticamente, non verifica in autonomia le affermazioni, non attribuisce punteggi a persone o testate. Queste funzioni richiedono fonti lecite, validazione del metodo, gestione dei diritti e controlli più solidi.
 
-Leggi `docs/METHODOLOGY.md` e `docs/ROADMAP.md`.
+Leggi `docs/METHODOLOGY.md`, `docs/ROADMAP.md` e [`docs/SOURCES.md`](docs/SOURCES.md). Il catalogo di 20 fonti candidate è in [`config/source_candidates.json`](config/source_candidates.json): ogni scansione automatica resta disabilitata finché i permessi non sono verificati.
 
 ## Estensione Chrome (sviluppo locale)
 
