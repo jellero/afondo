@@ -240,6 +240,10 @@
     finally { $("submit").disabled = false; }
   });
   refreshList();
+  const initialArticleId = new URLSearchParams(window.location.search).get("article");
+  if (initialArticleId && /^[a-f0-9-]{36}$/i.test(initialArticleId)) {
+    loadArticle(initialArticleId);
+  }
 </script>
 </body>
 </html>
