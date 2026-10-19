@@ -6,9 +6,7 @@ articles, bypass paywalls, scrape arbitrary sites, or re-publish article bodies.
 from __future__ import annotations
 
 from datetime import datetime, timezone
-from email.utils import format_datetime
 import ipaddress
-import json
 import os
 import socket
 import urllib.error
