@@ -410,6 +410,26 @@
       },
       "rights": "review_required",
       "notes": "Fonti dirette ONU, dichiarazioni e dati ufficiali; dichiarazione istituzionale non equivale a fatto indipendentemente accertato."
+    },
+    {
+      "id": "pagella-politica-it",
+      "name": "Pagella Politica",
+      "type": "factcheck_reference",
+      "priority": "context",
+      "regions": [
+        "IT"
+      ],
+      "languages": [
+        "it"
+      ],
+      "site": "https://pagellapolitica.it/",
+      "discovery": {
+        "method": "site",
+        "url": "https://pagellapolitica.it/",
+        "confirmed_by": "https://pagellapolitica.it/manifesto"
+      },
+      "rights": "review_required",
+      "notes": "Riferimento a verifiche pubblicate con fonti e rettifiche; non sostituisce l'analisi autonoma AFONDO né autorizza automaticamente la raccolta AI."
     }
   ]
 }
