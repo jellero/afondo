@@ -137,7 +137,11 @@ def _configured(source: dict, grant: object) -> dict:
 
 
 def public_source(source: dict) -> dict:
-    return {key: value for key, value in source.items() if not key.startswith("_")}
+    """Expose only non-sensitive source metadata, not API endpoints or credentials."""
+    data = {key: value for key, value in source.items()
+            if not key.startswith("_") and key != "discovery_url"}
+    data["has_discovery_endpoint"] = bool(source["discovery_url"])
+    return data
 
 
 def get_source(source_id: str) -> dict | None:
