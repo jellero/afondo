@@ -13,3 +13,6 @@ dist/
 build/
 *.egg-info/
 .DS_Store
+
+# Confidential source license and access configuration
+config/source_grants.json
