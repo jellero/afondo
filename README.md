@@ -38,6 +38,14 @@ Senza la variabile, l'endpoint di revisione resta disabilitato. Non esporre un a
 - Storico locale SQLite e test automatici
 - Preview dell'estensione Chrome con permesso `activeTab` (vedi `extension/README.md`)
 
+## Registro fonti e metadata discovery
+
+Il catalogo di 20 sorgenti è integrato nel backend. Apri [`/sources`](http://127.0.0.1:8000/sources) oppure `GET /api/v1/sources` per visualizzare tipologia, metodo di discovery e stato del permesso. Le sorgenti includono RaiNews, DW, BBC, Euronews, France 24, Agência Brasil, Al Jazeera, Il Post, ANSA, AP, Reuters, Guardian, Africanews, NHK, The Conversation, ISTAT, Eurostat, NASA/JPL, UN News e Pagella Politica.
+
+**Nessuna sorgente viene scaricata per impostazione predefinita.** Il registry non è una licenza. Solo dopo aver acquisito permessi espliciti, si configura un grant separato e si attiva manualmente `POST /api/v1/sources/{id}/sync` con token amministrativo: vedi [`docs/INGESTION.md`](docs/INGESTION.md).
+
+I connettori RSS/Atom/RDF e JSON configurabile salvano esclusivamente titolo, URL e data di pubblicazione. Per API proprietarie servono endpoint, contratto e integrazioni specifiche. È una pipeline di scoperta, non scraping di articoli completi.
+
 ## Limitazioni intenzionali
 
 Non esegue crawling di siti terzi, non traduce automaticamente, non verifica in autonomia le affermazioni, non attribuisce punteggi a persone o testate. Queste funzioni richiedono fonti lecite, validazione del metodo, gestione dei diritti e controlli più solidi.
