@@ -62,5 +62,26 @@ def initialize() -> None:
               reviewed_at TEXT
             );
             CREATE INDEX IF NOT EXISTS idx_evidence_claim ON evidence(claim_id);
+            CREATE TABLE IF NOT EXISTS discovered_items (
+              id INTEGER PRIMARY KEY AUTOINCREMENT,
+              source_id TEXT NOT NULL,
+              title TEXT NOT NULL,
+              url TEXT NOT NULL,
+              published_at TEXT,
+              discovered_at TEXT NOT NULL,
+              external_id TEXT,
+              UNIQUE(source_id, url)
+            );
+            CREATE INDEX IF NOT EXISTS idx_discovered_source_time
+              ON discovered_items(source_id, discovered_at);
+            CREATE TABLE IF NOT EXISTS source_sync_state (
+              source_id TEXT PRIMARY KEY,
+              last_sync TEXT NOT NULL,
+              status TEXT NOT NULL,
+              items_seen INTEGER NOT NULL DEFAULT 0,
+              etag TEXT NOT NULL DEFAULT '',
+              last_modified TEXT NOT NULL DEFAULT '',
+              error TEXT NOT NULL DEFAULT ''
+            );
             """
         )
