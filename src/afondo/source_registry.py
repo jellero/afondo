@@ -75,7 +75,9 @@ def _configured(source: dict, grant: object) -> dict:
     rights_checked_at = None
     if isinstance(grant, dict):
         rights_checked_at = grant.get("reviewed_on")
-        allowed = grant.get("allowed_uses")\n        allowed = allowed if isinstance(allowed, list) else []\n        conditions = [
+        allowed = grant.get("allowed_uses")
+        allowed = allowed if isinstance(allowed, list) else []
+        conditions = [
             grant.get("permission_recorded") is True,
             "metadata_discovery" in allowed,
             isinstance(grant.get("permission_reference"), str)
@@ -101,9 +103,19 @@ def _configured(source: dict, grant: object) -> dict:
         if valid_grant:
             grant_reason = "adapter_or_endpoint_not_configured"
     else:
-        ready = valid_grant and _https_url(feed_url)
+        exact_host = urlsplit(feed_url).hostname if _https_url(feed_url) else None
+        approved_host = grant.get("approved_host") if isinstance(grant, dict) else None
+        valid_schema = adapter != "json_api" or (
+            isinstance(grant, dict) and isinstance(grant.get("api_schema"), dict)
+        )
+        ready = (
+            valid_grant and valid_schema and exact_host is not None
+            and isinstance(approved_host, str)
+            and exact_host == approved_host.strip().lower()
+            and urlsplit(feed_url).port in (None, 443)
+        )
         if valid_grant and not ready:
-            grant_reason = "invalid_https_endpoint"
+            grant_reason = "approved_https_endpoint_host_and_schema_required"
     return {
         "id": source["id"],
         "name": source["name"],
