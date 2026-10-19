@@ -18,7 +18,7 @@
 - [x] Parser RSS/Atom/RDF e JSON API configurabile
 - [x] Grant esplicito per fonte, controllo endpoint HTTPS e token amministrativo
 - [x] Discovery metadata con deduplica per URL, ETag/Last-Modified e cooldown
-- [x] Dashboard `/sources`
+- [x] Dashboard `/sources` e discovery `/news`\n- [x] Comando CLI `--dry-run` / `--once` per tutte le fonti autorizzate
 - [ ] Accordi e permessi reali per ciascuna fonte
 - [ ] Verifica in rete degli endpoint e delle API partner
 - [ ] Ingestion scheduler quando i permessi sono disponibili
