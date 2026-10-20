@@ -10,6 +10,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from afondo.admin_security import require_admin
 from afondo.ai_extraction import ExtractionError, MAX_INPUT_CHARS, active_provider, extract
 from afondo.db import connection
+from afondo.evidence_discovery import save_leads
 
 router = APIRouter(prefix="/api/v1/admin", tags=["AI extraction"],
                    dependencies=[Depends(require_admin)])
@@ -81,14 +82,19 @@ def _complete(run_id: str, result: dict) -> None:
         if row is None:
             raise ExtractionError("AI run was not in running state")
         for item in result["candidates"]:
+            candidate_id = str(uuid4())
             conn.execute(
                 """INSERT INTO ai_candidates
                    (id, run_id, article_id, quote, normalized_claim, kind, start_offset,
                     end_offset, review_status)
                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending')""",
-                (str(uuid4()), run_id, row["article_id"], item["quote"], item["claim"],
+                (candidate_id, run_id, row["article_id"], item["quote"], item["claim"],
                  item["kind"], item["start_offset"], item["end_offset"]),
             )
+            if item["kind"] == "factual":
+                # Metadata leads are *never* accepted evidence; title overlap
+                # only prepares a reading list for subsequent human fact-check.
+                save_leads(conn, candidate_id, item["claim"])
         conn.execute(
             """UPDATE ai_analysis_runs
                SET status='completed', finished_at=?, input_tokens=?, output_tokens=?,
@@ -121,6 +127,17 @@ def analysis_detail(article_id: str) -> dict:
                     (latest["id"],),
                 ).fetchall()
             ]
+            for item in items:
+                item["leads"] = [
+                    dict(lead) for lead in conn.execute(
+                        """SELECT l.source_id, d.title, d.url, l.rank_score,
+                                  l.shared_terms
+                           FROM ai_evidence_leads l
+                           JOIN discovered_items d ON d.id=l.discovered_item_id
+                           WHERE l.candidate_id=? ORDER BY l.rank_score DESC LIMIT 8""",
+                        (item["id"],),
+                    ).fetchall()
+                ]
     return {"article_id": article_id, "runs": runs, "candidates": items,
             "current_run_id": latest["id"] if latest else None}
 
