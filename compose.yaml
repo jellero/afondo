@@ -12,3 +12,17 @@ services:
     volumes:
       - ./data:/app/data
     restart: unless-stopped
+
+  preanalysis:
+    profiles: ["automation"]
+    build: .
+    command: ["python", "-m", "afondo.preanalysis_worker"]
+    environment:
+      AFONDO_DB_PATH: /app/data/afondo.sqlite3
+      AFONDO_SOURCE_GRANTS: /app/data/source_grants.json
+      AFONDO_ENCRYPTION_KEY: ${AFONDO_ENCRYPTION_KEY:-}
+      AFONDO_ENABLE_PREANALYSIS: ${AFONDO_ENABLE_PREANALYSIS:-0}
+      AFONDO_PREANALYSIS_INTERVAL_SECONDS: ${AFONDO_PREANALYSIS_INTERVAL_SECONDS:-900}
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
