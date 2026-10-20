@@ -26,3 +26,16 @@ services:
     volumes:
       - ./data:/app/data
     restart: unless-stopped
+
+  source-sync:
+    profiles: ["automation"]
+    build: .
+    command: ["python", "-m", "afondo.source_worker"]
+    environment:
+      AFONDO_DB_PATH: /app/data/afondo.sqlite3
+      AFONDO_SOURCE_GRANTS: /app/data/source_grants.json
+      AFONDO_ENABLE_SOURCE_SYNC: ${AFONDO_ENABLE_SOURCE_SYNC:-0}
+      AFONDO_SOURCE_SYNC_INTERVAL_SECONDS: ${AFONDO_SOURCE_SYNC_INTERVAL_SECONDS:-3600}
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
