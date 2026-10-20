@@ -76,6 +76,7 @@ code{background:#0d1724;color:var(--aqua);padding:2px 6px;border-radius:5px}
 <button type="button" class="tab" data-tab="sources" aria-selected="false">Fonti</button>
 <button type="button" class="tab" data-tab="ai" aria-selected="false">Intelligenza artificiale</button>
 <button type="button" class="tab" data-tab="analysis" aria-selected="false">Analisi AI</button>
+<button type="button" class="tab" data-tab="preanalysis" aria-selected="false">Preanalisi e storico</button>
 <button type="button" class="tab" data-tab="editorial" aria-selected="false">Pubblicazione</button>
 <button type="button" class="tab" data-tab="monitor" aria-selected="false">Monitoraggio</button>
 </aside>
@@ -170,6 +171,42 @@ code{background:#0d1724;color:var(--aqua);padding:2px 6px;border-radius:5px}
 <p class="small muted">Solo le candidate marcate come fatto e accettate dall'amministratore entrano nell'elenco delle affermazioni da verificare. L'accettazione non costituisce conferma della loro verità.</p>
 </div>
 </section>
+<section class="hidden" id="view-preanalysis">
+<div class="panel">
+<h2>Preanalisi prima della pubblicazione</h2>
+<p class="muted">Seleziona un articolo per autorizzarne espressamente l'elaborazione presso il provider AI. Il processo individua affermazioni candidate: la ricerca automatica di prove indipendenti non è ancora disponibile.</p>
+<div class="notice">Non attivare questa funzione senza verificare il diritto di inviare il testo dell'articolo a un servizio AI esterno. Il flag deve riportare base documentale e responsabile della verifica. Nessun feed di soli metadati viene processato come articolo completo.</div>
+<div class="field"><label for="pa-article">Articolo</label><select id="pa-article"><option value="">Seleziona un articolo</option></select></div>
+<form id="pa-permission" class="hidden">
+<div class="formgrid" style="margin-top:16px">
+<div class="field span2"><label><input id="pa-allowed" type="checkbox"> Autorizzo il trattamento AI esterno del testo, dopo verifica dei diritti</label></div>
+<div class="field span2"><label for="pa-basis">Base / riferimento dell'autorizzazione</label><textarea id="pa-basis" rows="2" maxlength="1000" placeholder="Riferimento verificabile a licenza, autorizzazione, titolarità o altra base lecita"></textarea></div>
+<div class="field"><label for="pa-checked">Verificato da</label><input id="pa-checked" maxlength="120" placeholder="Responsabile"></div>
+<div class="field"><label for="pa-expires">Scadenza (facoltativa)</label><input id="pa-expires" type="date"></div>
+</div>
+<div class="actions"><button class="primary" type="submit">Salva permesso AI</button></div>
+</form>
+<hr>
+<div class="toolbar"><div><h3>Coda di preanalisi</h3><p class="muted small">Il worker esamina soltanto articoli approvati per l'AI, mai testi presi da feed senza licenza.</p></div>
+<button class="secondary" id="pa-refresh" type="button">Aggiorna coda</button></div>
+<p class="small muted" id="pa-status" role="status">Nessuna esecuzione.</p>
+<button id="pa-run" class="primary" type="button">Processa ora fino a 3 articoli</button>
+<p class="small muted">Per un'esecuzione ricorrente configura un processo pianificato esterno con <code>python -m afondo.preanalysis --once</code>. Limiti API e spesa restano in vigore.</p>
+</div>
+<div class="panel">
+<h2>Attribuzione verificata a testata e autore</h2>
+<p class="muted">Lo storico pubblico appare soltanto quando un revisore controlla il collegamento originale e la firma. Identità e omonimie non vengono unite automaticamente tra testate diverse.</p>
+<div class="field"><label for="at-article">Articolo</label><select id="at-article"><option value="">Seleziona un articolo</option></select></div>
+<form id="at-form" class="hidden">
+<div class="formgrid" style="margin-top:16px">
+<div class="field span2"><label><input id="at-outlet" type="checkbox"> Testata e URL originale verificati</label></div>
+<div class="field span2"><label><input id="at-byline" type="checkbox"> Firma dell'autore verificata nell'articolo originale</label></div>
+<div class="field"><label for="at-checked">Verificato da</label><input id="at-checked" maxlength="120"></div>
+<div class="field span2"><label for="at-note">Prova / metodo di verifica dell'attribuzione</label><textarea id="at-note" maxlength="800" rows="3" placeholder="Come è stata verificata la pubblicazione e la firma?"></textarea></div>
+</div><div class="actions"><button class="primary" type="submit">Salva attribuzione</button><a href="/history" target="_blank" rel="noopener noreferrer">Apri lo storico pubblico ↗</a></div>
+</form>
+</div>
+</section>
 <section class="hidden" id="view-editorial">
 <div class="panel">
 <div class="toolbar">
@@ -208,6 +245,7 @@ code{background:#0d1724;color:var(--aqua);padding:2px 6px;border-radius:5px}
     <div class="field span2">
       <label><input type="checkbox" id="ed-out-of-context"> Affermazione fuori contesto</label>
     </div>
+    <div class="field span2"><label for="ed-change">Motivo della modifica (richiesto per revisioni pubblicate)</label><textarea id="ed-change" maxlength="600" rows="2" placeholder="Che cosa è cambiato rispetto alla versione pubblica precedente?"></textarea></div>
     <div class="field span2"><label for="ed-note">Motivazione pubblica</label>
       <textarea id="ed-note" maxlength="1200" rows="4" placeholder="Spiega con precisione cosa è documentato, cosa manca e perché la segnalazione è appropriata."></textarea>
     </div>
