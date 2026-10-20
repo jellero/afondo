@@ -104,6 +104,14 @@ def test_preanalysis_licensed_batch_does_not_publish_or_verify_claim(monkeypatch
         details = client.get(f"/api/v1/admin/articles/{article_id}/ai", headers=AUTH).json()
         assert details["runs"][0]["status"] == "completed"
         assert details["candidates"][0]["review_status"] == "pending"
+        # Editorial approval may publish a text, but not a false green verdict:
+        assert client.put(
+            f"/api/v1/admin/editorial/{article_id}",
+            headers=AUTH, json={"status": "approved"}
+        ).status_code == 200
+        visible = client.get("/api/v1/feed").json()["items"][0]
+        assert visible["preanalysis"] == "candidate_review_pending"
+        assert visible["indicator"]["state"] == "unverified"
         assert client.get("/api/v1/admin/preanalysis", headers=AUTH).json()["eligible"] == 0
         repeated = client.post("/api/v1/admin/preanalysis/once", headers=AUTH)
         assert repeated.json()["processed"] == 0
