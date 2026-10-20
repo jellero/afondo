@@ -38,12 +38,6 @@ def eligible_articles(limit: int = 10) -> list[dict]:
                       p.basis, p.checked_by, p.checked_at, p.expires_on
                FROM articles a
                JOIN article_processing_grants p ON p.article_id=a.id
-               WHERE p.allowed=1 AND p.expires_on IS NULL OR 1=0"""
-        ).fetchall() if False else conn.execute(
-            """SELECT a.id, a.title, length(a.body) AS text_chars, a.created_at,
-                      p.basis, p.checked_by, p.checked_at, p.expires_on
-               FROM articles a
-               JOIN article_processing_grants p ON p.article_id=a.id
                WHERE p.allowed=1
                  AND (p.expires_on IS NULL OR p.expires_on >= ?)
                  AND length(a.body) <= ?
