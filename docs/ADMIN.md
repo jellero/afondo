@@ -88,6 +88,21 @@ La scheda **Analisi AI** elenca gli articoli già registrati, esegue l'estrazion
 
 Consulta [`docs/AI_EXTRACTION.md`](AI_EXTRACTION.md) per dettagli operativi e tecnici.
 
+## Nuova sezione: Preanalisi e storico
+
+Consente di salvare i permessi per l'invio del testo al provider AI, di
+eseguire un batch e di confermare testata e firma prima di inserirle in uno
+storico pubblico. Dal portale `/history` sono disponibili esclusivamente
+articoli approvati con attribuzione confermata.
+
+La pipeline può suggerire link di documenti rilevanti dall'indice dei
+metadati, **solo se** la fonte autorizza anche la ricerca interna
+(`internal_evidence_lookup`). Questi link **non sono ancora prove
+revisionate** e non generano automaticamente giudizi sui fatti.
+
+L'elaborazione continua è disabilitata di default: vedi
+[PREANALYSIS_HISTORY.md](PREANALYSIS_HISTORY.md) per avvio, permessi e limiti.
+
 ## API protette
 
 Tutte le seguenti rotte richiedono `X-Admin-Token`:
@@ -95,6 +110,11 @@ Tutte le seguenti rotte richiedono `X-Admin-Token`:
 | Endpoint | Funzione |
 |---|---|
 | `GET /api/v1/admin/status` | Stato del pannello |
+| `GET /api/v1/admin/preanalysis` | Stato coda AI |
+| `PUT /api/v1/admin/articles/{id}/processing` | Registrazione diritto AI |
+| `POST /api/v1/admin/preanalysis/once` | Un batch fino a 3 articoli |
+| `GET /api/v1/admin/attributions` | Stato attribuzioni |
+| `PUT /api/v1/admin/articles/{id}/attribution` | Firma e testata verificate |
 | `GET /api/v1/admin/sources` | Fonti e autorizzazioni |
 | `POST /api/v1/admin/sources` | Nuova fonte |
 | `PUT /api/v1/admin/sources/{id}` | Modifica fonte |
