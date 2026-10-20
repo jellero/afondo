@@ -134,7 +134,7 @@ def test_no_oversize_ai_request(monkeypatch, tmp_path):
 
 def test_failed_inference_not_reported_as_valid(monkeypatch, tmp_path):
     from afondo import ai_workflow
-    def broken(_article):
+    def broken(_article, _provider=None):
         raise ExtractionError("Provider HTTP 429")
     monkeypatch.setattr(ai_workflow, "extract", broken)
     with setup(monkeypatch, tmp_path) as client:
