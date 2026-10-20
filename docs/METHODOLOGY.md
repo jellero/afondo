@@ -34,7 +34,7 @@ Si calcola **solo se** almeno due affermazioni sono risolte e almeno il 60% dell
 
 ## Cosa NON è ancora implementato
 
-- Analisi semantica automatica, LLM e riconoscimento di opinioni vs. fatti
+- [Parziale] Estrazione AI strutturata di affermazioni fattuali/opinioni/previsioni con citazioni esatte; da validare su un corpus editoriale e da integrare con un confronto indipendente delle prove
 - Recupero autonomo delle fonti, fact-check esterno o traduzioni
 - Analisi del contesto storico, temporale e statistico
 - Verifica di citazioni tagliate e corrispondenza titolo/testo
