@@ -109,6 +109,8 @@ function drawCard(item) {
   headline.append(open);
   const hints=el("div","article-hints");
   hints.append(indicator(item));
+  if(item.preanalysis==="candidate_review_pending")
+    hints.append(el("span","coverage-note","· Preanalisi AI completata: revisione in corso"));
   if(item.coverage_sources >= 2) hints.append(
     el("span","coverage-note","Ripresa da "+item.coverage_sources+" fonti nel catalogo")
   );
@@ -220,6 +222,9 @@ function openDrawer(item){
   } else assessment.append(el("p","",
     "Non abbiamo ancora elementi sufficienti per valutare il contenuto di questa notizia. L'assenza di analisi non implica che sia falsa."));
   content.append(assessment);
+  if(item.preanalysis==="candidate_review_pending")
+    content.append(el("p","drawer-copy",
+      "AFONDO ha già individuato affermazioni candidate tramite AI. La revisione e il confronto con le prove sono ancora in corso: non è una certificazione di attendibilità."));
   content.append(el("h3","","Che cosa sappiamo"));
   content.append(el("p","drawer-copy",item.summary));
   if(item.coverage_sources>=2) content.append(el("p","drawer-copy",
