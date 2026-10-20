@@ -221,10 +221,10 @@ def validated_candidates(article_body: str, output: ExtractOutput) -> list[dict]
     return accepted
 
 
-def extract(article: dict, *, send=transport) -> dict:
+def extract(article: dict, entry: dict | None = None, *, send=transport) -> dict:
     if len(article["body"]) > MAX_INPUT_CHARS:
         raise ExtractionError(f"Article exceeds {MAX_INPUT_CHARS} character AI budget")
-    entry = active_provider()
+    entry = entry if entry is not None else active_provider()
     key = decrypt_secret(entry["key_ciphertext"])
     url, headers, payload = request_spec(entry, key, article)
     # Prevent accidental leakage of the key beyond this call.
