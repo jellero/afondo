@@ -45,12 +45,12 @@ def source_catalog() -> dict:
 def source_grants() -> dict:
     """Missing grant file is a safe and supported state: no discovery."""
     path = Path(os.getenv("AFONDO_SOURCE_GRANTS", str(DEFAULT_GRANTS)))
-    if not path.is_file():
-        return {}
-    contents = _load_json(path)
-    grants = contents.get("sources", {})
-    if not isinstance(grants, dict):
-        raise SourceConfigError("Invalid grant object")
+    grants = {}
+    if path.is_file():
+        contents = _load_json(path)
+        grants = contents.get("sources", {})
+        if not isinstance(grants, dict):
+            raise SourceConfigError("Invalid grant object")
     from afondo.admin_store import admin_grants
 
     # Database grants take precedence; explicit revocation defeats a legacy file grant.
