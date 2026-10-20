@@ -6,8 +6,6 @@ a fixed provider models endpoint (no article text, no inference).
 from __future__ import annotations
 
 from datetime import date
-import json
-import re
 import urllib.error
 import urllib.request
 from typing import Literal
@@ -21,7 +19,8 @@ from afondo.admin_store import (
     admin_grants, ai_config, ai_configs, delete_ai, delete_source,
     save_ai, save_grant, source_overrides, upsert_source,
 )
-from afondo.source_registry import configured_sources, get_source, public_source, source_catalog
+from afondo.source_registry import configured_sources, get_source, source_catalog
+from afondo.source_ingestion import source_stats
 
 router = APIRouter(prefix="/api/v1/admin", tags=["Administration"],
                    dependencies=[Depends(require_admin)])
@@ -140,9 +139,11 @@ def admin_status():
 @router.get("/sources")
 def list_admin_sources():
     grants = admin_grants()
+    stats = source_stats()
     entries = []
     for source in configured_sources():
         row = _metadata(source)
+        row["sync"] = stats.get(source["id"], {})
         grant = grants.get(source["id"], source["_grant"])
         # Never return credentials or token values.
         row["grant"] = {
