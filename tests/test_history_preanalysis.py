@@ -30,7 +30,9 @@ def article(client, name="Marta Rossi"):
             "Una seconda relazione contiene dati sugli stessi consumatori."
         ),
         "author": name, "outlet": "Giornale Demo",
-        "source_url": "https://news.example.org/energia",
+        "source_url": "https://news.example.org/energia" + (
+            "-2" if name == "Marco Rossi" else ""
+        ),
     })
     assert response.status_code == 201
     return response.json()["id"]
