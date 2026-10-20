@@ -63,6 +63,17 @@ Le API per la sync delle fonti continuano a richiedere `AFONDO_INGEST_TOKEN` ind
 
 Il test di connessione **non dimostra** che il modello specifico sia accessibile o che il motore AFONDO Check lo stia usando. La pipeline di analisi resta separata e non ancora implementata.
 
+## Nuova sezione: Analisi AI
+
+La scheda **Analisi AI** elenca gli articoli già registrati, esegue l'estrazione con il provider predefinito solo dopo conferma, mostra modello e consumo token e permette di accettare o rifiutare candidate. La verifica dei fatti resta separata.
+
+- Limite 12.000 caratteri per articolo; articoli più lunghi vanno rielaborati con policy esplicite.
+- Massimo 25 tentativi globali / 24 ore e 1 tentativo per articolo / ora.
+- L'invio può comportare costi e trattamento esterno dei dati; non inviare contenuti senza autorizzazioni.
+- Accettare una candidata `factual` la aggiunge al registro `claims`, senza attribuire alcuna verità.
+
+Consulta [`docs/AI_EXTRACTION.md`](AI_EXTRACTION.md) per dettagli operativi e tecnici.
+
 ## API protette
 
 Tutte le seguenti rotte richiedono `X-Admin-Token`:
