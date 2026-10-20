@@ -16,6 +16,7 @@ from afondo.schemas import ArticleCreate, EvidenceCreate, EvidenceReview
 from afondo.scoring import score_article, score_claim
 from afondo.source_api import router as source_router
 from afondo.admin_api import router as admin_router
+from afondo.ai_workflow import router as ai_workflow_router
 
 
 def timestamp() -> str:
@@ -38,6 +39,7 @@ app = FastAPI(
 
 app.include_router(source_router)
 app.include_router(admin_router)
+app.include_router(ai_workflow_router)
 
 
 @app.get("/")
