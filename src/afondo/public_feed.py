@@ -152,7 +152,10 @@ def get_feed(topic: str = "tutti", sort: str = "recenti",
                       e.topic, e.status AS editorial_status, e.sensationalistic,
                       e.out_of_context, e.note, e.evidence_url, e.featured,
                       COALESCE(v.outlet_confirmed,0) AS outlet_confirmed,
-                      COALESCE(v.byline_confirmed,0) AS byline_confirmed
+                      COALESCE(v.byline_confirmed,0) AS byline_confirmed,
+                      (SELECT r.status FROM ai_analysis_runs r
+                       WHERE r.article_id=a.id ORDER BY r.started_at DESC LIMIT 1)
+                       AS ai_preanalysis_status
                FROM articles a LEFT JOIN editorial_reviews e ON e.article_id=a.id
                LEFT JOIN verified_attributions v ON v.article_id=a.id
                ORDER BY a.created_at DESC LIMIT 150"""
@@ -179,6 +182,11 @@ def get_feed(topic: str = "tutti", sort: str = "recenti",
             from afondo.history import history_links
             items.append({
                 "history": history_links(dict(row)),
+                "preanalysis": (
+                    "candidate_review_pending"
+                    if row["ai_preanalysis_status"] == "completed" else
+                    "failed" if row["ai_preanalysis_status"] == "failed" else "not_started"
+                ),
                 "id": "a-" + row["id"], "kind": "article", "article_id": row["id"],
                 "title": row["title"], "url": row["source_url"],
                 "source": row["outlet"] or "AFONDO / Testo inviato",
@@ -202,6 +210,7 @@ def get_feed(topic: str = "tutti", sort: str = "recenti",
             continue
         items.append({
             "history": {"outlet": None, "author": None},
+            "preanalysis": "not_applicable_metadata_only",
             "id": "d-" + str(row["id"]), "kind": "discovery", "article_id": None,
             "title": row["title"], "url": row["url"],
             "source": name_by_id.get(row["source_id"], row["source_id"]),
