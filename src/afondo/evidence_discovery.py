@@ -5,7 +5,6 @@ the truth-verdict engine until a reviewer has read the original source.
 """
 from __future__ import annotations
 
-from collections import Counter
 import json
 import re
 from unicodedata import normalize
