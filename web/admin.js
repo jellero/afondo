@@ -142,6 +142,7 @@ function setSourceFields(source) {
 function setGrantFields(grant = {}) {
   $("g-recorded").checked = Boolean(grant.permission_recorded);
   $("g-display").checked = Boolean(grant.public_display_allowed);
+  $("g-leads").checked = Boolean(grant.evidence_lookup_allowed);
   $("g-reference").value = grant.permission_reference || "";
   $("g-by").value = grant.approved_by || "";
   $("g-date").value = grant.reviewed_on || "";
@@ -205,6 +206,7 @@ $("grant-form").addEventListener("submit", async event => {
   const payload = {
     permission_recorded: $("g-recorded").checked,
     public_display_allowed: $("g-display").checked,
+    evidence_lookup_allowed: $("g-leads").checked,
     permission_reference: value("g-reference"), approved_by: value("g-by"),
     reviewed_on: value("g-date") || null, expires_on: value("g-expires") || null,
     endpoint: value("g-endpoint") || null, adapter: value("g-adapter"),
@@ -370,6 +372,21 @@ async function loadExtractedClaims(id) {
       card.append(make("p", "muted small",
         "Posizione nel testo originale: " +
         candidate.start_offset + "–" + candidate.end_offset));
+      if (candidate.leads?.length) {
+        const container = make("div", "");
+        container.style.marginTop = "14px";
+        container.append(make("strong", "small", "Fonti potenzialmente pertinenti — non verificate"));
+        for (const lead of candidate.leads) {
+          const outer = make("div", "small muted");
+          outer.style.marginTop = "6px";
+          const link = make("a", "", lead.title + " ↗");
+          link.href = lead.url;
+          link.target = "_blank"; link.rel = "noopener noreferrer";
+          outer.append(link, make("span", "", " · " + lead.source_id));
+          container.append(outer);
+        }
+        card.append(container);
+      }
       if (candidate.review_status === "pending") {
         const actions = make("div", "actions");
         for (const decision of ["accept", "reject"]) {
