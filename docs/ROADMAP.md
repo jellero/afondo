@@ -37,11 +37,26 @@
 - [x] Candidate ancorate al testo, revisione manuale e storico delle esecuzioni
 - [ ] Estendere la pipeline al reperimento autonomo di prove e al loro confronto
 
+## Milestone 0.7 — Portale leggibile e indicatori immediati
+
+- [x] Homepage notizie responsive, categorie, ricerca, stato colorato per articolo
+- [x] Feed pubblico con ordinamento recenti / copertura su più testate / analizzate
+- [x] Pannello laterale con provenienza, motivo e link alla fonte originale
+- [x] Endpoint /api/v1/feed con stato prudente per dati insufficienti
+- [x] Moderazione prima di pubblicare testi caricati sul portale
+- [x] Revisione editoriale esplicita e documentata di sensazionalismo/fuori contesto
+- [x] Permessi separati per acquisizione e pubblicazione metadati dei feed
+- [ ] Clustering multilingue serio per evento e misurazione reale delle tendenze
+- [ ] Preanalisi automatica in background delle prove prima della pubblicazione
+- [ ] Qualità editoriale e revisione doppia sulle segnalazioni reputazionali
+- [ ] Test runtime, accessibilità e scalabilità del nuovo portale
+
 ## Milestone 1 — Motore serio di verifica
 
 - [ ] PostgreSQL, Alembic e storage dei documenti con provenienza
 - [ ] OAuth/OIDC, RBAC per revisori, audit log, rate limiting e moderazione
-- [x] Prima estrazione LLM strutturata con citazioni esatte e offset (solo su richiesta admin)\n- [ ] Benchmark qualità delle estrazioni, disambiguazione e copertura multilingua
+- [x] Prima estrazione LLM strutturata con citazioni esatte e offset (solo su richiesta admin)
+- [ ] Benchmark qualità delle estrazioni, disambiguazione e copertura multilingua
 - [ ] Indice di ricerca, ranking delle fonti e verifica di indipendenza
 - [ ] Controllo umano su affermazioni e prove; doppia revisione per casi controversi
 - [ ] Calibrazione dello scoring e metriche di qualità
