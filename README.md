@@ -10,7 +10,7 @@ Questa repository contiene la base del motore **AFONDO Check**, non un fact-chec
 
 AFONDO include un pannello riservato disponibile su **[http://127.0.0.1:8000/admin](http://127.0.0.1:8000/admin)**, con gestione delle fonti, delle autorizzazioni e dei provider AI (OpenAI, Anthropic, Gemini). Le chiavi vengono cifrate con Fernet nel database e non sono mai ritornate dal backend.
 
-**Per entrare servono due variabili d'ambiente**, `AFONDO_ADMIN_TOKEN` e `AFONDO_ENCRYPTION_KEY`. Leggi le istruzioni passo passo in **[docs/ADMIN.md](docs/ADMIN.md)** prima di usare il pannello. Non pubblicare il pannello su Internet senza ulteriori protezioni. Nessuna scansione parte automaticamente; i provider ora alimentano l'estrazione AI su richiesta, mentre il fact-check con fonti esterne non è ancora automatizzato.
+**Per entrare servono due variabili d'ambiente**, `AFONDO_ADMIN_TOKEN` e `AFONDO_ENCRYPTION_KEY`. Leggi le istruzioni passo passo in **[docs/ADMIN.md](docs/ADMIN.md)** prima di usare il pannello. Non pubblicare il pannello su Internet senza ulteriori protezioni. L'elaborazione AI ricorrente è opzionale e richiede attivazione esplicita e permessi per articolo; il fact-check con fonti esterne non è ancora automatizzato.
 
 ## Avvio locale
 
@@ -70,6 +70,31 @@ anche `public_metadata_display`.
 **Non è ancora un portale news live**, perché le licenze dei fornitori,
 gli endpoint e la preanalisi automatica delle prove non sono collaudati.
 Vedi [docs/PORTAL.md](docs/PORTAL.md).
+
+## Preanalisi automatizzabile e storico testate/autori
+
+AFONDO include una **coda di preanalisi** e un worker opzionale per processare,
+prima della lettura, gli articoli per cui è stata documentata l'autorizzazione a
+inviare il testo al provider AI. Dall'amministrazione, la scheda **Preanalisi e
+storico** consente di registrare tale permesso, avviare un piccolo batch e
+verificare il collegamento originale a testata e firma.
+
+La pagina pubblica **[Storico testate e autori](http://127.0.0.1:8000/history)**
+presenta soltanto articoli approvati, con attribuzione verificata e revisioni
+documentate. Mostra dati descrittivi (articoli, segnalazioni, prove accettate,
+revisioni), **non punteggi reputazionali automatici**.
+
+Il worker ripetuto è **disabilitato di default**: richiede
+`AFONDO_ENABLE_PREANALYSIS=1` e `docker compose --profile automation up -d --build`,
+dopo aver verificato permessi articolo e impostato provider e segreti.
+Resta soggetto a 25 richieste globali per 24 ore e agli altri limiti di
+esecuzione AI. Le candidate restano in revisione; la ricerca autonoma e
+l'interpretazione delle prove esterne non è ancora completa.
+
+È disponibile anche un **indice di piste documentali**: associa parole
+rilevanti delle candidate ai titoli in feed/API che consentono esplicitamente
+tale trattamento, senza trasformare i titoli in prove.
+Guida completa: [docs/PREANALYSIS_HISTORY.md](docs/PREANALYSIS_HISTORY.md).
 
 ## Registro fonti e metadata discovery
 
