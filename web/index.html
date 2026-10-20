@@ -53,10 +53,10 @@
   </style>
 </head>
 <body>
-  <header><div class="bar"><span class="brand">AFONDO<span style="color:var(--accent)">.</span></span><span class="tag"><a href="/sources" style="color:var(--accent)">Esplora fonti →</a> &nbsp; <a href="/news" style="color:var(--accent)">Notizie →</a> &nbsp; <a href="/admin" style="color:var(--accent)">Admin →</a> &nbsp; CHECK / PROTOTYPE 0.1</span></div></header>
+  <header><div class="bar"><a class="brand" href="/" aria-label="AFONDO — Torna alle notizie" style="text-decoration:none">AFONDO<span style="color:var(--accent)">.</span></a><span class="tag"><a href="/" style="color:var(--accent)">Portale notizie →</a> &nbsp; <a href="/news" style="color:var(--accent)">Notizie →</a> &nbsp; <a href="/admin" style="color:var(--accent)">Admin →</a> &nbsp; CHECK / PROTOTYPE 0.1</span></div></header>
   <main>
-    <h1>Don't just read. <em>Go deeper.</em></h1>
-    <p class="lead">Scomponi un articolo in affermazioni e collega ogni conclusione a prove consultabili. Quando non ci sono verifiche sufficienti, AFONDO non inventa un risultato.</p>
+    <h1>Verifica un testo. <em>Go deeper.</em></h1>
+    <p class="lead">Questo è lo spazio di analisi AFONDO. Per leggere le notizie con indicatori immediati, visita il <a href="/" style="color:var(--accent)">portale pubblico</a>. Le affermazioni vengono valutate soltanto con prove esaminate.</p>
     <div class="layout">
       <section class="panel">
         <h2>Analizza un testo</h2>
@@ -88,7 +88,7 @@
     </div>
     <section id="analysis" class="panel hide" style="margin-top:22px" aria-live="polite"></section>
   </main>
-  <footer>AFONDO Check è un MVP di ricerca. Non esprime giudizi automatici su persone, testate o opinioni. Nessuna fonte viene scaricata dal server.</footer>
+  <footer>AFONDO Check è un MVP di ricerca. Non esprime giudizi automatici su persone, testate o opinioni. Gli RSS/API autorizzati possono fornire metadati; nessuna notizia completa viene scaricata da questa pagina.</footer>
 <script>
   "use strict";
   const $ = id => document.getElementById(id);
