@@ -49,7 +49,7 @@ function tab(name) {
   for (const button of document.querySelectorAll("[data-tab]")) {
     button.setAttribute("aria-selected", String(button.dataset.tab === name));
   }
-  for (const section of ["overview", "sources", "ai", "analysis", "monitor"]) {
+  for (const section of ["overview", "sources", "ai", "analysis", "editorial", "monitor"]) {
     $("view-" + section).classList.toggle("hidden", section !== name);
   }
   if (name === "monitor") renderMonitor();
@@ -100,6 +100,7 @@ async function reloadAll() {
   renderAi();
   renderMonitor();
   await reloadArticleQueue();
+  await reloadEditorial();
 }
 
 function renderSources() {
@@ -418,4 +419,69 @@ $("analysis-run").addEventListener("click", async () => {
     $("analysis-status").textContent = "Errore nell'estrazione.";
     flash(error.message, true);
   } finally { button.disabled = false; }
+});
+
+
+let editorialRows = [];
+async function reloadEditorial() {
+  try {
+    const selected = $("ed-article").value;
+    const result = await api("/editorial?limit=100");
+    editorialRows = result.items || [];
+    const select = $("ed-article");
+    select.replaceChildren();
+    const opt = make("option", "", "Seleziona un articolo");
+    opt.value = ""; select.append(opt);
+    for (const article of editorialRows) {
+      const option = make("option", "", article.title + " · " + (article.outlet || "Testo inviato"));
+      option.value = article.id; select.append(option);
+    }
+    if(editorialRows.some(a => a.id === selected)) select.value = selected;
+    showEditorial();
+  } catch(error) { $("ed-feedback").textContent = "Errore: " + error.message; }
+}
+function showEditorial() {
+  const id = $("ed-article").value;
+  const article = editorialRows.find(item => item.id === id);
+  $("ed-form").classList.toggle("hidden", !article);
+  if(!article) return;
+  $("ed-topic").value = article.topic || "";
+  $("ed-status").value = article.status || "draft";
+  $("ed-featured").checked = Boolean(article.featured);
+  $("ed-sensationalistic").checked = Boolean(article.sensationalistic);
+  $("ed-out-of-context").checked = Boolean(article.out_of_context);
+  $("ed-note").value = article.note || "";
+  $("ed-evidence").value = article.evidence_url || "";
+  $("ed-feedback").textContent = article.updated_at ?
+    "Ultimo aggiornamento: " + article.updated_at : "Nessuna revisione editoriale";
+}
+$("ed-article").addEventListener("change", showEditorial);
+$("ed-form").addEventListener("submit", async event => {
+  event.preventDefault();
+  const article = $("ed-article").value;
+  if(!article) return;
+  const body = {
+    topic: value("ed-topic") || null,
+    status: value("ed-status"),
+    featured: $("ed-featured").checked,
+    sensationalistic: $("ed-sensationalistic").checked,
+    out_of_context: $("ed-out-of-context").checked,
+    note: value("ed-note"),
+    evidence_url: value("ed-evidence") || null
+  };
+  const hasWarning = body.sensationalistic || body.out_of_context;
+  if (body.status==="approved" && hasWarning &&
+      (body.note.length<40 || !body.evidence_url)) {
+    return flash("Per pubblicare un avviso devi scrivere una motivazione di 40+ caratteri e collegare un documento.",true);
+  }
+  if (body.status==="approved" && hasWarning &&
+      !window.confirm("Confermi la pubblicazione di questa segnalazione editoriale documentata?")) return;
+  try {
+    const result = await api("/editorial/" + encodeURIComponent(article),{
+      method:"PUT", body
+    });
+    $("ed-feedback").textContent = "Salvato · " + result.status;
+    await reloadEditorial();
+    flash(result.visible_warning ? "Segnalazione pubblicata sul portale." : "Scheda editoriale salvata.");
+  } catch(error) {flash("Errore editoriale: "+error.message,true)}
 });
