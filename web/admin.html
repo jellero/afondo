@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>AFONDO — Administration</title>
+<style>
+:root{color-scheme:dark;--bg:#090f18;--panel:#151e2b;--panel2:#1e2a3a;--text:#f4f8fc;--muted:#abc0d2;--line:#304054;--aqua:#55dcd6;--danger:#ff9b9b;--warn:#f7ca86}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at 100% 0%,#172c42,transparent 39%),var(--bg);color:var(--text);font:14px/1.55 Inter,system-ui,-apple-system,sans-serif;min-height:100vh}
+a{color:var(--aqua);text-underline-offset:3px}
+input,select,textarea,button{font:inherit}
+input,select,textarea{background:#0e1723;border:1px solid #40516a;border-radius:10px;color:var(--text);padding:11px 12px;width:100%}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--aqua);outline-offset:1px}
+input[type=checkbox]{width:auto;accent-color:var(--aqua)}
+button{cursor:pointer;border:0;border-radius:10px;padding:10px 15px;font-weight:750}
+button:disabled{opacity:.5;cursor:not-allowed}
+button.primary{background:var(--aqua);color:#08272d}
+button.secondary{border:1px solid #45576e;background:#233249;color:#e5f1f7}
+button.danger{background:#56262c;color:#ffd0d0;border:1px solid #854752}
+button.ghost{border:1px solid transparent;background:transparent;color:#d1deee}
+header{border-bottom:1px solid var(--line);background:#0c1420e8}
+.top{max-width:1320px;margin:auto;padding:19px 25px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.brand{font-size:22px;letter-spacing:.12em;font-weight:950}.brand i{font-style:normal;color:var(--aqua)}
+.top nav{display:flex;align-items:center;gap:18px}
+.wrap{max-width:1320px;margin:auto;padding:34px 25px 95px}
+h1{font-size:clamp(28px,3vw,41px);line-height:1.15;letter-spacing:-.04em;margin:0 0 7px}
+h2{font-size:21px;letter-spacing:-.02em;margin:0 0 14px}
+h3{font-size:16px;margin:0 0 10px}
+p{margin:7px 0}
+.muted{color:var(--muted)}.small{font-size:12px}
+.layout{display:grid;grid-template-columns:220px 1fr;gap:24px;margin-top:30px}
+.side{background:#121c29;border:1px solid var(--line);border-radius:16px;padding:12px;align-self:start;position:sticky;top:16px}
+.tab{display:block;width:100%;text-align:left;background:transparent;color:#b7c9d9;margin-bottom:5px;padding:12px}
+.tab[aria-selected=true]{background:#214050;color:#9ef4ef}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:24px;margin-bottom:20px}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:22px 0}
+.metric{background:#0e1723;padding:20px;border:1px solid var(--line);border-radius:14px}
+.metric strong{font-size:27px;display:block;line-height:1.1}
+.metric span{color:var(--muted);font-size:12px}
+.toolbar{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:15px}
+.formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.field label{display:block;font-size:12px;font-weight:750;color:#d3e3ef;margin:0 0 6px}
+.field.span2{grid-column:span 2}
+.field small{color:var(--muted)}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.notice{padding:13px 16px;border-radius:10px;border-left:3px solid var(--warn);background:#30291c;color:#f9e1b1;margin:15px 0}
+.good{color:#91eacc}.bad{color:#ffb4b4}
+.list{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.source{background:#101b28;border:1px solid var(--line);border-radius:12px;padding:16px;cursor:pointer;text-align:left;color:var(--text);font-weight:500}
+.source:hover,.source:focus-visible{border-color:var(--aqua)}
+.source strong{display:block;margin:5px 0}
+.pill{display:inline-block;border:1px solid #536a82;border-radius:30px;padding:2px 9px;font-size:11px;color:#bbd0e2;font-weight:650}
+.pill.green{color:#94eed9;border-color:#317d6d}
+.pill.yellow{color:#f7d196;border-color:#826743}
+hr{border:0;border-top:1px solid var(--line);margin:23px 0}
+.backdrop{display:flex;align-items:center;justify-content:center;position:fixed;inset:0;background:#060c13f2;z-index:10;padding:15px}
+.login{width:min(440px,100%);background:var(--panel);border:1px solid var(--line);border-radius:19px;padding:30px;box-shadow:0 20px 60px #0009}
+.login h1{font-size:30px}.login input{margin:12px 0}
+.login button{width:100%}
+.hidden{display:none!important}
+#feedback{position:fixed;bottom:20px;right:20px;max-width:460px;background:#1b3340;border:1px solid #438b95;padding:15px 18px;border-radius:12px;z-index:5;box-shadow:0 12px 34px #0008}
+code{background:#0d1724;color:var(--aqua);padding:2px 6px;border-radius:5px}
+@media(max-width:820px){.layout{grid-template-columns:1fr}.side{display:flex;position:static;overflow-x:auto;gap:5px}.tab{white-space:nowrap}.cards{grid-template-columns:1fr 1fr}.wrap{padding:28px 14px}.top{padding:16px 14px}}
+@media(max-width:520px){.formgrid{grid-template-columns:1fr}.field.span2{grid-column:span 1}.cards{grid-template-columns:1fr}.panel{padding:17px}}
+</style>
+</head>
+<body>
+<header><div class="top"><div class="brand">AFONDO<i>.</i> <span class="small muted">CONTROL</span></div><nav><a href="/">Portale</a><a href="/sources">Fonti pubbliche</a><button class="ghost hidden" id="logout">Esci</button></nav></div></header>
+<main class="wrap">
+<h1>Centro di amministrazione</h1>
+<p class="muted">Gestisci le fonti, le autorizzazioni e le credenziali AI in un unico posto.</p>
+<div class="layout" id="application">
+<aside class="side" aria-label="Sezioni">
+<button type="button" class="tab" data-tab="overview" aria-selected="true">Panoramica</button>
+<button type="button" class="tab" data-tab="sources" aria-selected="false">Fonti</button>
+<button type="button" class="tab" data-tab="ai" aria-selected="false">Intelligenza artificiale</button>
+<button type="button" class="tab" data-tab="monitor" aria-selected="false">Monitoraggio</button>
+</aside>
+<div>
+<section id="view-overview">
+<div class="panel">
+<h2>Stato di AFONDO</h2><p class="muted">Pannello operativo. Nessuna scansione viene attivata automaticamente.</p>
+<div class="cards">
+<div class="metric"><strong id="metric-sources">–</strong><span>Fonti registrate</span></div>
+<div class="metric"><strong id="metric-enabled">–</strong><span>Discovery autorizzate</span></div>
+<div class="metric"><strong id="metric-ai">–</strong><span>Provider AI configurati</span></div>
+</div>
+<div class="notice">Il motore di verifica AI non utilizza ancora i provider configurati. Le chiavi possono essere salvate e verificate, ma non vengono eseguite analisi AI.</div>
+<div class="actions"><button class="secondary" id="overview-to-sources">Gestisci le fonti →</button><button class="secondary" id="overview-to-ai">Configura AI →</button></div>
+</div>
+</section>
+<section class="hidden" id="view-sources">
+<div class="panel">
+<div class="toolbar"><div><h2>Registro delle fonti</h2><p class="muted small">Seleziona una fonte per modificarla, oppure creane una nuova.</p></div><button class="primary" id="new-source">+ Nuova fonte</button></div>
+<div class="field"><input id="source-search" placeholder="Cerca testata o ID..." aria-label="Cerca testata"></div>
+<p class="muted small" id="source-count"></p>
+<div class="list" id="source-list"></div>
+</div>
+<div class="panel hidden" id="source-editor">
+<h2 id="source-form-title">Modifica fonte</h2>
+<form id="source-form" autocomplete="off">
+<div class="formgrid">
+<div class="field"><label for="s-id">ID tecnico</label><input id="s-id" required minlength="2" maxlength="70" pattern="[a-z0-9]+(-[a-z0-9]+)*"></div>
+<div class="field"><label for="s-name">Nome testata *</label><input id="s-name" required minlength="2" maxlength="200"></div>
+<div class="field"><label for="s-type">Tipologia</label><select id="s-type"><option value="newsroom">Giornale / Emittente</option><option value="news_agency">Agenzia</option><option value="primary_evidence">Fonte primaria</option><option value="factcheck_reference">Fact-checking</option></select></div>
+<div class="field"><label for="s-priority">Priorità</label><input id="s-priority" value="pilot" maxlength="60"></div>
+<div class="field"><label for="s-regions">Aree geografiche (virgole)</label><input id="s-regions" required value="IT"></div>
+<div class="field"><label for="s-languages">Lingue (virgole)</label><input id="s-languages" required value="it"></div>
+<div class="field span2"><label for="s-site">Sito ufficiale HTTPS *</label><input id="s-site" required type="url" placeholder="https://giornale.example"></div>
+<div class="field"><label for="s-method">Metodo di acquisizione</label><select id="s-method"><option value="rss">RSS diretto</option><option value="rss_catalog">Catalogo RSS</option><option value="licensed_api">API con licenza</option><option value="site">Sito senza feed</option><option value="site_or_feed_to_confirm">Feed da verificare</option></select></div>
+<div class="field"><label for="s-url">URL feed HTTPS (se disponibile)</label><input id="s-url" type="url" placeholder="https://.../feed.xml"></div>
+<div class="field span2"><label><input id="s-active" type="checkbox"> Consenti l'attivazione quando i permessi sono registrati</label><small>Se disattivato, nessuna sincronizzazione sarà consentita, anche con licenza valida.</small></div>
+</div>
+<div class="actions"><button type="submit" class="primary">Salva fonte</button><button type="button" class="danger hidden" id="delete-source">Archivia fonte</button><button type="button" class="secondary" id="close-source">Chiudi</button></div>
+</form>
+<hr>
+<h3>Autorizzazioni e collegamento tecnico</h3>
+<p class="muted small">Inserire soltanto permessi reali e documentati. Un RSS pubblico non equivale a una licenza AI.</p>
+<form id="grant-form">
+<div class="formgrid">
+<div class="field span2"><label><input type="checkbox" id="g-recorded"> Ho verificato una licenza o autorizzazione per la discovery dei metadati</label></div>
+<div class="field span2"><label for="g-reference">Riferimento del permesso</label><textarea id="g-reference" rows="2" maxlength="1500" placeholder="Numero contratto, documento o URL condizioni"></textarea></div>
+<div class="field"><label for="g-by">Verificato da</label><input id="g-by" maxlength="160"></div>
+<div class="field"><label for="g-date">Data revisione</label><input id="g-date" type="date"></div>
+<div class="field"><label for="g-expires">Scadenza (opzionale)</label><input id="g-expires" type="date"></div>
+<div class="field"><label for="g-adapter">Adapter</label><select id="g-adapter"><option value="feed">RSS / Atom</option><option value="json_api">JSON API</option></select></div>
+<div class="field span2"><label for="g-endpoint">Endpoint preciso HTTPS (facoltativo se RSS diretto)</label><input id="g-endpoint" type="url" placeholder="https://..."></div>
+<div class="field span2"><label for="g-schema">Mapping JSON API (se richiesto, JSON)</label><textarea rows="3" id="g-schema" placeholder='{"items_path":"response.results","title_field":"webTitle","url_field":"webUrl"}'></textarea></div>
+<div class="field"><label for="g-env">Nome variabile per token sorgente (opzionale)</label><input id="g-env" placeholder="AFONDO_SOURCE_NEWS_TOKEN"></div>
+<div class="field"><label for="g-header">Header token sorgente</label><select id="g-header"><option>Authorization</option><option>X-API-Key</option></select></div>
+</div>
+<div class="actions"><button type="submit" class="primary">Salva autorizzazione</button><span class="muted small" id="grant-state">Seleziona prima una fonte.</span></div>
+</form>
+</div>
+</section>
+<section class="hidden" id="view-ai">
+<div class="panel">
+<h2>Provider di intelligenza artificiale</h2>
+<p class="muted">Le chiavi vengono cifrate lato server. Non appaiono nell'elenco, non vengono restituite dalle API e non rimangono nel browser dopo aver lasciato la pagina.</p>
+<form id="ai-form" autocomplete="off">
+<div class="formgrid">
+<div class="field"><label for="ai-provider">Provider</label><select id="ai-provider"><option value="openai">OpenAI</option><option value="anthropic">Anthropic</option><option value="gemini">Google Gemini</option></select></div>
+<div class="field"><label for="ai-model">Modello</label><input id="ai-model" required placeholder="Inserisci il model ID" maxlength="120"></div>
+<div class="field span2"><label for="ai-key">API key</label><input id="ai-key" type="password" placeholder="Nuova chiave (lascia vuoto per mantenere la precedente)" maxlength="500" autocomplete="new-password"></div>
+<div class="field span2"><label><input type="checkbox" id="ai-active" checked> Provider predefinito attivo</label></div>
+</div>
+<div class="actions"><button class="primary" type="submit">Salva configurazione</button><button type="button" class="secondary" id="ai-test">Test connessione</button><button type="button" class="danger" id="ai-delete">Elimina chiave e configurazione</button></div>
+</form>
+<hr><h3>Provider configurati</h3><div id="ai-list" class="list"></div>
+<div class="notice">Il test verifica soltanto che la chiave possa accedere alla lista dei modelli del provider. Non certifica l'accesso a un modello specifico, né attiva l'analisi automatica delle notizie.</div>
+</div>
+</section>
+<section class="hidden" id="view-monitor">
+<div class="panel"><h2>Monitoraggio dell'acquisizione</h2><p class="muted">Ultimi stati di sincronizzazione per le fonti registrate. Per avviare una scansione servono permessi validi e il token di ingestion già previsto dal backend.</p><div id="monitor-list" class="list"></div></div>
+</section>
+</div>
+</div>
+</main>
+<div class="backdrop" id="login-overlay">
+<div class="login">
+<div class="brand">AFONDO<i>.</i></div><h1>Accesso amministratore</h1>
+<p class="muted">Inserisci il token amministrativo configurato sul server. Rimane in memoria fino a quando esci o ricarichi la pagina.</p>
+<form id="login-form"><label for="login-token">Token di amministrazione</label><input id="login-token" type="password" required minlength="24" autocomplete="off" spellcheck="false"><button class="primary">Accedi</button></form>
+<p class="small bad" id="login-error" role="alert"></p>
+<p class="small muted">L'accesso è disponibile su localhost oppure tramite HTTPS.</p>
+</div>
+</div>
+<div id="feedback" class="hidden" role="status" aria-live="polite"></div>
+<script src="/admin.js" defer></script>
+</body></html>
