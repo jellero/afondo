@@ -138,7 +138,14 @@ def _published_rows() -> list[dict]:
             """SELECT a.id, a.title, a.author, a.outlet, a.source_url,
                       a.created_at, e.updated_at, e.note, e.evidence_url,
                       e.sensationalistic, e.out_of_context, e.topic,
-                      v.outlet_confirmed, v.byline_confirmed
+                      v.outlet_confirmed, v.byline_confirmed,
+                      (SELECT COUNT(*) FROM claims c
+                       JOIN evidence ev ON ev.claim_id=c.id
+                       WHERE c.article_id=a.id AND ev.review_status='accepted')
+                       AS accepted_evidence_count,
+                      (SELECT COUNT(*) FROM editorial_review_events ev
+                       WHERE ev.article_id=a.id AND ev.event_kind='revised')
+                       AS editorial_revisions_count
                FROM articles a
                JOIN editorial_reviews e ON e.article_id=a.id AND e.status='approved'
                JOIN verified_attributions v ON v.article_id=a.id
@@ -181,6 +188,12 @@ def _summary(entry: dict) -> dict:
         "article_count": len(rows),
         "articles_with_sensationalism_note": flags["sensationalistic"],
         "articles_with_context_note": flags["out_of_context"],
+        "articles_with_accepted_evidence": sum(
+            1 for row in rows if row["accepted_evidence_count"] > 0
+        ),
+        "editorial_revisions": sum(
+            row["editorial_revisions_count"] for row in rows
+        ),
         "sample_status": "limited" if len(rows) < 10 else "descriptive_only",
         "rating": None,
         "disclaimer": (
@@ -238,6 +251,8 @@ def get_history(kind: str, slug: str):
              "outlet": row["outlet"], "url": row["source_url"],
              "created_at": row["created_at"], "updated_at": row["updated_at"],
              "note": row["note"], "evidence_url": row["evidence_url"],
+             "accepted_evidence_count": row["accepted_evidence_count"],
+             "editorial_revisions_count": row["editorial_revisions_count"],
              "flags": {
                  "sensationalistic": bool(row["sensationalistic"]),
                  "out_of_context": bool(row["out_of_context"]),
