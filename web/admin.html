@@ -76,6 +76,7 @@ code{background:#0d1724;color:var(--aqua);padding:2px 6px;border-radius:5px}
 <button type="button" class="tab" data-tab="sources" aria-selected="false">Fonti</button>
 <button type="button" class="tab" data-tab="ai" aria-selected="false">Intelligenza artificiale</button>
 <button type="button" class="tab" data-tab="analysis" aria-selected="false">Analisi AI</button>
+<button type="button" class="tab" data-tab="editorial" aria-selected="false">Pubblicazione</button>
 <button type="button" class="tab" data-tab="monitor" aria-selected="false">Monitoraggio</button>
 </aside>
 <div>
@@ -166,6 +167,57 @@ code{background:#0d1724;color:var(--aqua);padding:2px 6px;border-radius:5px}
 <h3>Ultima estrazione</h3><div id="analysis-runs" class="muted small"></div>
 <h3 style="margin-top:25px">Candidate estratte</h3><div id="analysis-candidates"></div>
 <p class="small muted">Solo le candidate marcate come fatto e accettate dall'amministratore entrano nell'elenco delle affermazioni da verificare. L'accettazione non costituisce conferma della loro verità.</p>
+</div>
+</section>
+<section class="hidden" id="view-editorial">
+<div class="panel">
+<div class="toolbar">
+  <div>
+    <h2>Pubblicazione sul portale</h2>
+    <p class="muted">Gestisci categorie, notizie in evidenza e segnali visivi per gli articoli disponibili.</p>
+  </div>
+  <a href="/" class="small" target="_blank" rel="noopener noreferrer">Visualizza il portale ↗</a>
+</div>
+<div class="notice">“Sensazionalistico” e “Fuori contesto” sono valutazioni editoriali, non diagnosi automatiche dell'AI. Per pubblicarle occorrono una motivazione dettagliata e un documento consultabile. Le notizie conosciute solo tramite RSS rimangono non verificate.</div>
+<div class="field">
+  <label for="ed-article">Articolo da gestire</label>
+  <select id="ed-article"><option value="">Seleziona un articolo</option></select>
+</div>
+<form id="ed-form" class="hidden">
+  <div class="formgrid" style="margin-top:21px">
+    <div class="field"><label for="ed-topic">Categoria</label>
+      <select id="ed-topic">
+        <option value="">Automatica (titolo)</option>
+        <option value="attualita">Attualità</option><option value="politica">Politica</option>
+        <option value="economia">Economia</option><option value="mondo">Mondo</option>
+        <option value="tecnologia">Tecnologia</option><option value="scienza">Scienza</option>
+        <option value="salute">Salute</option><option value="ambiente">Ambiente</option>
+        <option value="sport">Sport</option><option value="cultura">Cultura</option>
+      </select>
+    </div>
+    <div class="field"><label for="ed-status">Stato della revisione</label>
+      <select id="ed-status"><option value="draft">Bozza, non pubblicare avvisi</option><option value="approved">Approvata, mostra avvisi motivati</option></select>
+    </div>
+    <div class="field span2">
+      <label><input type="checkbox" id="ed-featured"> Metti in primo piano nella home</label>
+    </div>
+    <div class="field span2">
+      <label><input type="checkbox" id="ed-sensationalistic"> Titolo sensazionalistico</label>
+    </div>
+    <div class="field span2">
+      <label><input type="checkbox" id="ed-out-of-context"> Affermazione fuori contesto</label>
+    </div>
+    <div class="field span2"><label for="ed-note">Motivazione pubblica</label>
+      <textarea id="ed-note" maxlength="1200" rows="4" placeholder="Spiega con precisione cosa è documentato, cosa manca e perché la segnalazione è appropriata."></textarea>
+    </div>
+    <div class="field span2"><label for="ed-evidence">Riferimento documentale HTTPS</label>
+      <input id="ed-evidence" type="url" placeholder="https://fonte-originale-o-documento...">
+    </div>
+  </div>
+  <p class="small muted">Per pubblicare una segnalazione servono almeno 40 caratteri di motivazione e un URL di prova. Un articolo in evidenza non deve necessariamente aver ricevuto una valutazione di accuratezza.</p>
+  <div class="actions"><button type="submit" class="primary">Salva la scheda editoriale</button>
+    <span class="muted small" id="ed-feedback" aria-live="polite"></span></div>
+</form>
 </div>
 </section>
 <section class="hidden" id="view-monitor">
