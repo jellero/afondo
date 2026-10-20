@@ -49,7 +49,7 @@ function tab(name) {
   for (const button of document.querySelectorAll("[data-tab]")) {
     button.setAttribute("aria-selected", String(button.dataset.tab === name));
   }
-  for (const section of ["overview", "sources", "ai", "monitor"]) {
+  for (const section of ["overview", "sources", "ai", "analysis", "monitor"]) {
     $("view-" + section).classList.toggle("hidden", section !== name);
   }
   if (name === "monitor") renderMonitor();
@@ -99,6 +99,7 @@ async function reloadAll() {
   renderSources();
   renderAi();
   renderMonitor();
+  await reloadArticleQueue();
 }
 
 function renderSources() {
@@ -295,3 +296,126 @@ function renderMonitor() {
     root.append(card);
   }
 }
+
+
+let articleQueue = [];
+
+async function reloadArticleQueue() {
+  try {
+    const old = $("analysis-article").value;
+    const data = await api("/article-queue?limit=60");
+    articleQueue = data.items || [];
+    const select = $("analysis-article");
+    select.replaceChildren();
+    const prompt = make("option", "", "Seleziona un articolo");
+    prompt.value = ""; select.append(prompt);
+    for (const article of articleQueue) {
+      const option = make("option", "",
+        article.title + " · " + article.text_chars + " caratteri");
+      option.value = article.id;
+      if (article.text_chars > data.max_input_chars) option.disabled = true;
+      select.append(option);
+    }
+    if (articleQueue.some(article => article.id === old)) select.value = old;
+    if (select.value) await loadExtractedClaims(select.value);
+    else clearAnalysis("Seleziona un articolo per eseguire l'estrazione.");
+  } catch (error) {
+    clearAnalysis("Impossibile caricare gli articoli: " + error.message);
+  }
+}
+
+function clearAnalysis(message) {
+  $("analysis-status").textContent = message;
+  $("analysis-runs").replaceChildren();
+  $("analysis-candidates").replaceChildren();
+}
+
+async function loadExtractedClaims(id) {
+  if (!id) return clearAnalysis("Seleziona un articolo.");
+  try {
+    const data = await api("/articles/" + encodeURIComponent(id) + "/ai");
+    const runs = $("analysis-runs");
+    runs.replaceChildren();
+    const latest = data.runs?.[0];
+    if (!latest) {
+      clearAnalysis("Questo articolo non è ancora stato elaborato dall'AI.");
+      return;
+    }
+    $("analysis-status").textContent =
+      "Ultima elaborazione: " + latest.status + " · " + latest.provider + " / " + latest.model;
+    runs.append(make("p", "small muted",
+      "Eseguita: " + latest.started_at +
+      " · Versione prompt: " + latest.prompt_version +
+      " · Token input: " + (latest.input_tokens ?? "n/d") +
+      " · Token output: " + (latest.output_tokens ?? "n/d")));
+    if (latest.rejected_candidate_count) {
+      runs.append(make("p", "small muted", latest.rejected_candidate_count +
+        " proposte non ancorate al testo originale sono state scartate."));
+    }
+    const container = $("analysis-candidates"); container.replaceChildren();
+    if (!data.candidates.length) {
+      container.append(make("p", "muted", "Nessuna candidata ancorata al testo."));
+      return;
+    }
+    for (const candidate of data.candidates) {
+      const card = make("div", "panel");
+      card.style.background = "#0e1723";
+      card.append(make("span", "pill", candidate.kind + " · " + candidate.review_status));
+      card.append(make("p", "", "«" + candidate.quote + "»"));
+      card.append(make("p", "muted small", candidate.normalized_claim));
+      card.append(make("p", "muted small",
+        "Posizione nel testo originale: " +
+        candidate.start_offset + "–" + candidate.end_offset));
+      if (candidate.review_status === "pending") {
+        const actions = make("div", "actions");
+        for (const decision of ["accept", "reject"]) {
+          if (decision === "accept" && candidate.kind !== "factual") continue;
+          const button = make("button", decision === "accept" ? "primary" : "secondary",
+                              decision === "accept" ? "Accetta come claim da verificare" :
+                                                      "Rifiuta");
+          button.type = "button";
+          button.addEventListener("click", async () => {
+            button.disabled = true;
+            try {
+              await api("/ai-candidates/" + encodeURIComponent(candidate.id) +
+                        "/decision?decision=" + decision, {method: "POST"});
+              await loadExtractedClaims(id);
+              flash(decision === "accept" ?
+                "Affermazione aggiunta alle verifiche, senza assegnare attendibilità." :
+                "Candidata rifiutata.");
+            } catch (error) { flash(error.message, true); button.disabled = false; }
+          });
+          actions.append(button);
+        }
+        card.append(actions);
+      }
+      container.append(card);
+    }
+  } catch (error) { clearAnalysis("Errore caricamento AI: " + error.message); }
+}
+
+$("analysis-article").addEventListener("change", event =>
+  loadExtractedClaims(event.target.value)
+);
+$("analysis-refresh").addEventListener("click", reloadArticleQueue);
+
+$("analysis-run").addEventListener("click", async () => {
+  const id = $("analysis-article").value;
+  if (!id) return flash("Seleziona prima un articolo.", true);
+  if (!window.confirm(
+      "Confermi di avere titolo per inviare il contenuto di questo articolo " +
+      "a un provider AI esterno? Questa operazione può generare costi API.")) return;
+  const button = $("analysis-run");
+  button.disabled = true;
+  $("analysis-status").textContent = "Estrazione in corso, attendere la risposta del provider...";
+  try {
+    const data = await api("/articles/" + encodeURIComponent(id) + "/ai-extract",
+                           {method: "POST"});
+    $("analysis-status").textContent = "Estrazione registrata.";
+    await loadExtractedClaims(id);
+    flash((data.candidates?.length || 0) + " candidate estratte. Revisionale prima dell'uso.");
+  } catch (error) {
+    $("analysis-status").textContent = "Errore nell'estrazione.";
+    flash(error.message, true);
+  } finally { button.disabled = false; }
+});
