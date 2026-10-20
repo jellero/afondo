@@ -63,6 +63,20 @@ Le API per la sync delle fonti continuano a richiedere `AFONDO_INGEST_TOKEN` ind
 
 Il test di connessione **non dimostra** che il modello specifico supporti l'output strutturato. Per verificare la reale compatibilità usa la scheda **Analisi AI** su un articolo che puoi lecitamente elaborare. Il fact-check tramite fonti esterne resta separato e non ancora automatizzato.
 
+## Nuova sezione: Pubblicazione
+
+Il pannello comprende **Pubblicazione** per impostare categoria, notizia
+in evidenza e approvazione prima che un testo sia mostrato nel nuovo portale
+`/`. Le segnalazioni “sensazionalistico” e “fuori contesto” sono visibili
+esclusivamente dopo una revisione documentata con nota di almeno 40 caratteri
+e URL HTTPS consultabile. Questi giudizi non vengono attribuiti dall'AI.
+
+La sezione Fonti ora distingue il permesso di discovery RSS/API dal diritto
+di **pubblicare titoli e metadati** nel portale: due concessioni diverse.
+Le notizie non autorizzate non vengono mostrate.
+
+Vedi [docs/PORTAL.md](PORTAL.md).
+
 ## Nuova sezione: Analisi AI
 
 La scheda **Analisi AI** elenca gli articoli già registrati, esegue l'estrazione con il provider predefinito solo dopo conferma, mostra modello e consumo token e permette di accettare o rifiutare candidate. La verifica dei fatti resta separata.
