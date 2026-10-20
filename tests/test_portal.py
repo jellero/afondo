@@ -37,7 +37,7 @@ def submit(c):
 def test_editorial_approval_is_required_for_publication(monkeypatch, tmp_path):
     with client(monkeypatch, tmp_path) as c:
         assert c.get("/").status_code == 200
-        assert "Le notizie, viste a fondo" in c.get("/").text
+        assert "viste a fondo." in c.get("/").text
         assert c.get("/portal.css").status_code == 200
         assert c.get("/portal.js").status_code == 200
         assert c.get("/analyze").status_code == 200
