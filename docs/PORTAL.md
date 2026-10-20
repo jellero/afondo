@@ -95,6 +95,21 @@ dell'articolo non viene incluso nel feed pubblico.**
 `GET /api/v1/admin/editorial` e `PUT /api/v1/admin/editorial/{article_id}`
 sono protette con `X-Admin-Token`.
 
+## Storico e preanalisi autorizzata
+
+Il nuovo percorso [`/history`](http://127.0.0.1:8000/history) raccoglie
+pubblicazioni attribuite manualmente a una testata e, quando confermata,
+alla firma riportata dall'articolo. Mostra cronologie delle segnalazioni e
+delle rettifiche, non un voto personale. Per visibilità servono sia l'approvazione
+editoriale sia la verifica di provenienza.
+
+Il sistema include inoltre una **coda opzionale di preanalisi AI** che opera sui
+soli testi per cui è stato verificato il diritto di inviarli al provider. Le
+proposte di documenti dell'indice sono soltanto piste da verificare. Non è ancora
+disponibile una valutazione automatica dei documenti probatori.
+
+Vedi [PREANALYSIS_HISTORY.md](PREANALYSIS_HISTORY.md).
+
 ## Limiti della versione attuale
 
 - Il feed non è ancora alimentato da testate autorizzate in produzione.
@@ -110,8 +125,8 @@ sono protette con `X-Admin-Token`.
   verifiche, audit delle revisioni, moderazione, cache/CDN, scheduler e test
   completi di sicurezza/accessibilità.
 
-L'obiettivo progettuale della versione successiva è una **coda di preanalisi
-automatica**, eseguita prima della lettura dal pubblico, con ricerca di documenti
-originali, confronto di fatti e contesto, e validazione editoriale dei casi
-controversi. Non trasformare il giudizio di un LLM in un'etichetta pubblica
+La coda di preanalisi AI è stata aggiunta come worker opzionale: per la
+versione successiva rimangono da sviluppare il recupero lecito dei documenti
+originali, il confronto dei fatti, l'analisi automatica del contesto e la
+validazione editoriale dei casi controversi. Non trasformare il giudizio di un LLM in un'etichetta pubblica
 senza una catena di prove verificabili.
