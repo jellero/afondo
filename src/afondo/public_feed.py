@@ -150,8 +150,11 @@ def get_feed(topic: str = "tutti", sort: str = "recenti",
         article_rows = conn.execute(
             """SELECT a.id, a.title, a.source_url, a.author, a.outlet, a.created_at,
                       e.topic, e.status AS editorial_status, e.sensationalistic,
-                      e.out_of_context, e.note, e.evidence_url, e.featured
+                      e.out_of_context, e.note, e.evidence_url, e.featured,
+                      COALESCE(v.outlet_confirmed,0) AS outlet_confirmed,
+                      COALESCE(v.byline_confirmed,0) AS byline_confirmed
                FROM articles a LEFT JOIN editorial_reviews e ON e.article_id=a.id
+               LEFT JOIN verified_attributions v ON v.article_id=a.id
                ORDER BY a.created_at DESC LIMIT 150"""
         ).fetchall()
         discoveries = conn.execute(
@@ -173,7 +176,9 @@ def get_feed(topic: str = "tutti", sort: str = "recenti",
                 continue
             topic_id = row["topic"] or classify_topic(row["title"])
             assessment = _claim_assessments(conn, row["id"])
+            from afondo.history import history_links
             items.append({
+                "history": history_links(dict(row)),
                 "id": "a-" + row["id"], "kind": "article", "article_id": row["id"],
                 "title": row["title"], "url": row["source_url"],
                 "source": row["outlet"] or "AFONDO / Testo inviato",
@@ -196,6 +201,7 @@ def get_feed(topic: str = "tutti", sort: str = "recenti",
         if row["source_id"] not in display_allowed:
             continue
         items.append({
+            "history": {"outlet": None, "author": None},
             "id": "d-" + str(row["id"]), "kind": "discovery", "article_id": None,
             "title": row["title"], "url": row["url"],
             "source": name_by_id.get(row["source_id"], row["source_id"]),
