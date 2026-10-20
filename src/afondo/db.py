@@ -74,6 +74,39 @@ def initialize() -> None:
             );
             CREATE INDEX IF NOT EXISTS idx_discovered_source_time
               ON discovered_items(source_id, discovered_at);
+            CREATE TABLE IF NOT EXISTS ai_analysis_runs (
+              id TEXT PRIMARY KEY,
+              article_id TEXT NOT NULL REFERENCES articles(id) ON DELETE CASCADE,
+              provider TEXT NOT NULL,
+              model TEXT NOT NULL,
+              prompt_version TEXT NOT NULL,
+              status TEXT NOT NULL,
+              started_at TEXT NOT NULL,
+              finished_at TEXT,
+              input_sha256 TEXT NOT NULL,
+              input_chars INTEGER NOT NULL,
+              input_tokens INTEGER,
+              output_tokens INTEGER,
+              candidate_count INTEGER NOT NULL DEFAULT 0,
+              rejected_candidate_count INTEGER NOT NULL DEFAULT 0
+            );
+            CREATE INDEX IF NOT EXISTS idx_ai_runs_article
+              ON ai_analysis_runs(article_id, started_at);
+            CREATE INDEX IF NOT EXISTS idx_ai_runs_started
+              ON ai_analysis_runs(started_at);
+            CREATE TABLE IF NOT EXISTS ai_candidates (
+              id TEXT PRIMARY KEY,
+              run_id TEXT NOT NULL REFERENCES ai_analysis_runs(id),
+              article_id TEXT NOT NULL REFERENCES articles(id) ON DELETE CASCADE,
+              quote TEXT NOT NULL,
+              normalized_claim TEXT NOT NULL,
+              kind TEXT NOT NULL,
+              start_offset INTEGER NOT NULL,
+              end_offset INTEGER NOT NULL,
+              review_status TEXT NOT NULL DEFAULT 'pending',
+              claim_id TEXT REFERENCES claims(id)
+            );
+            CREATE INDEX IF NOT EXISTS idx_ai_candidates_run ON ai_candidates(run_id);
             CREATE TABLE IF NOT EXISTS admin_sources (
               id TEXT PRIMARY KEY,
               definition_json TEXT NOT NULL,
