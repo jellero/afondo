@@ -7,6 +7,8 @@ services:
       AFONDO_DB_PATH: /app/data/afondo.sqlite3
       AFONDO_SOURCE_GRANTS: /app/data/source_grants.json
       AFONDO_INGEST_TOKEN: ${AFONDO_INGEST_TOKEN:-}
+      AFONDO_ADMIN_TOKEN: ${AFONDO_ADMIN_TOKEN:-}
+      AFONDO_ENCRYPTION_KEY: ${AFONDO_ENCRYPTION_KEY:-}
     volumes:
       - ./data:/app/data
     restart: unless-stopped
