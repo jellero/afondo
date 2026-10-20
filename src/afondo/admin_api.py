@@ -74,6 +74,7 @@ class SourceInput(BaseModel):
 
 class GrantInput(BaseModel):
     permission_recorded: bool = False
+    public_display_allowed: bool = False
     permission_reference: str = Field(default="", max_length=1500)
     approved_by: str = Field(default="", max_length=160)
     reviewed_on: date | None = None
@@ -148,6 +149,7 @@ def list_admin_sources():
         # Never return credentials or token values.
         row["grant"] = {
             "permission_recorded": grant.get("permission_recorded", False),
+            "public_display_allowed": "public_metadata_display" in grant.get("allowed_uses", []),
             "permission_reference": grant.get("permission_reference", ""),
             "approved_by": grant.get("approved_by", ""),
             "reviewed_on": grant.get("reviewed_on"),
@@ -223,7 +225,11 @@ def upsert_grant(source_id: str, payload: GrantInput):
     host = urlsplit(endpoint).hostname if endpoint else None
     grant = {
         "permission_recorded": payload.permission_recorded,
-        "allowed_uses": ["metadata_discovery"] if payload.permission_recorded else [],
+        "allowed_uses": (
+            ["metadata_discovery"]
+            + (["public_metadata_display"] if payload.public_display_allowed else [])
+            if payload.permission_recorded else []
+        ),
         "permission_reference": payload.permission_reference.strip(),
         "approved_by": payload.approved_by.strip(),
         "reviewed_on": str(payload.reviewed_on) if payload.reviewed_on else None,
