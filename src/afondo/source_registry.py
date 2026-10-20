@@ -29,12 +29,17 @@ def _load_json(path: Path) -> dict:
 
 
 def source_catalog() -> dict:
+    from afondo.admin_store import source_overrides
+
     path = Path(os.getenv("AFONDO_SOURCE_CATALOG", str(DEFAULT_CATALOG)))
     catalog = _load_json(path)
     sources = catalog.get("sources")
     if not isinstance(sources, list) or len({s["id"] for s in sources}) != len(sources):
         raise SourceConfigError("Source catalog is missing or contains duplicate identifiers")
-    return catalog
+    overrides, deleted = source_overrides()
+    index = {source["id"]: source for source in sources if source["id"] not in deleted}
+    index.update(overrides)
+    return {**catalog, "sources": list(index.values())}
 
 
 def source_grants() -> dict:
@@ -46,7 +51,10 @@ def source_grants() -> dict:
     grants = contents.get("sources", {})
     if not isinstance(grants, dict):
         raise SourceConfigError("Invalid grant object")
-    return grants
+    from afondo.admin_store import admin_grants
+
+    # Database grants take precedence; explicit revocation defeats a legacy file grant.
+    return {**grants, **admin_grants()}
 
 
 def configured_sources() -> list[dict]:
@@ -116,6 +124,10 @@ def _configured(source: dict, grant: object) -> dict:
         )
         if valid_grant and not ready:
             grant_reason = "approved_https_endpoint_host_and_schema_required"
+    active = source.get("active", True)
+    if not active:
+        ready = False
+        grant_reason = "source_paused"
     return {
         "id": source["id"],
         "name": source["name"],
@@ -124,6 +136,7 @@ def _configured(source: dict, grant: object) -> dict:
         "languages": source["languages"],
         "site": source["site"],
         "priority": source["priority"],
+        "active": active,
         "discovery_method": mode,
         "adapter": adapter,
         "discovery_url": feed_url,
