@@ -28,7 +28,7 @@ services:
     restart: unless-stopped
 
   source-sync:
-    profiles: ["automation"]
+    profiles: ["source-automation"]
     build: .
     command: ["python", "-m", "afondo.source_worker"]
     environment:
