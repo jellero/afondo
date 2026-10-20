@@ -41,7 +41,7 @@ def sample_article(client):
     return response.json(), first, second
 
 
-def fake_extraction(article):
+def fake_extraction(article, _provider=None):
     quote = "una crescita del 12 percento"
     assert quote in article["body"]
     start = article["body"].find(quote)
