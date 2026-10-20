@@ -17,6 +17,8 @@ from afondo.scoring import score_article, score_claim
 from afondo.source_api import router as source_router
 from afondo.admin_api import router as admin_router
 from afondo.ai_workflow import router as ai_workflow_router
+from afondo.public_feed import router as public_feed_router
+from afondo.editorial_api import router as editorial_router
 
 
 def timestamp() -> str:
@@ -40,12 +42,37 @@ app = FastAPI(
 app.include_router(source_router)
 app.include_router(admin_router)
 app.include_router(ai_workflow_router)
+app.include_router(public_feed_router)
+app.include_router(editorial_router)
 
 
 @app.get("/")
-def homepage():
-    index = Path(__file__).resolve().parents[2] / "web" / "index.html"
-    return FileResponse(index, media_type="text/html")
+def homepage(article: str | None = None):
+    if article:
+        from fastapi.responses import RedirectResponse
+        return RedirectResponse(url="/analyze?article=" + article, status_code=307)
+    return FileResponse(
+        Path(__file__).resolve().parents[2] / "web" / "portal.html",
+        media_type="text/html",
+    )
+
+
+@app.get("/portal.css")
+def portal_css():
+    return FileResponse(Path(__file__).resolve().parents[2] / "web" / "portal.css",
+                        media_type="text/css")
+
+
+@app.get("/portal.js")
+def portal_js():
+    return FileResponse(Path(__file__).resolve().parents[2] / "web" / "portal.js",
+                        media_type="application/javascript")
+
+
+@app.get("/analyze")
+def analyze_page():
+    return FileResponse(Path(__file__).resolve().parents[2] / "web" / "index.html",
+                        media_type="text/html")
 
 
 @app.get("/sources")
