@@ -23,7 +23,15 @@ pip install -e '.[dev]'
 uvicorn afondo.main:app --reload
 ```
 
-Apri http://127.0.0.1:8000 per la demo e http://127.0.0.1:8000/docs per l'API.
+Apri **http://127.0.0.1:8000** per il nuovo portale pubblico con categorie,
+ricerca, stati di verifica colorati e dettaglio delle fonti. L'editor di testi
+precedente ora è in **http://127.0.0.1:8000/analyze**. La documentazione API
+è in http://127.0.0.1:8000/docs.
+
+Il portale visualizza solo articoli approvati dal redattore o metadati di fonti
+che hanno anche permesso di pubblicazione. Se i permessi mancano, mostra
+correttamente un messaggio di assenza di notizie, non contenuti inventati.
+Leggi [docs/PORTAL.md](docs/PORTAL.md) per indicatori, categorie e policy.
 
 Per abilitare l'endpoint di revisione delle prove in ambiente **locale e protetto**:
 
@@ -43,6 +51,25 @@ Senza la variabile, l'endpoint di revisione resta disabilitato. Non esporre un a
 - Stato **dati insufficienti** quando non è giustificato un punteggio
 - Storico locale SQLite e test automatici
 - Preview dell'estensione Chrome con permesso `activeTab` (vedi `extension/README.md`)
+
+## Nuovo portale editoriale
+
+La home `/` è una piattaforma di lettura responsive: notizie in evidenza,
+feed con pallini colorati, filtri **Attualità, Economia, Politica, Mondo,
+Tecnologia, Scienza, Salute, Ambiente, Sport, Cultura**, ricerca e ordinamenti.
+`In tendenza` significa copertura recente in almeno due fonti censite;
+non indica popolarità dei lettori. Non dichiariamo sensazionalismo o
+contenuto fuori contesto senza una revisione documentata.
+
+Dall'area `/admin` → **Pubblicazione** puoi approvare testi prima
+dell'esposizione pubblica, mettere una notizia in evidenza e motivare
+gli avvisi di titolo sensazionalistico/fuori contesto. La sola acquisizione
+di un feed non autorizza l'esposizione dei titoli: il grant deve comprendere
+anche `public_metadata_display`.
+
+**Non è ancora un portale news live**, perché le licenze dei fornitori,
+gli endpoint e la preanalisi automatica delle prove non sono collaudati.
+Vedi [docs/PORTAL.md](docs/PORTAL.md).
 
 ## Registro fonti e metadata discovery
 
