@@ -75,6 +75,7 @@ class SourceInput(BaseModel):
 class GrantInput(BaseModel):
     permission_recorded: bool = False
     public_display_allowed: bool = False
+    evidence_lookup_allowed: bool = False
     permission_reference: str = Field(default="", max_length=1500)
     approved_by: str = Field(default="", max_length=160)
     reviewed_on: date | None = None
@@ -150,6 +151,7 @@ def list_admin_sources():
         row["grant"] = {
             "permission_recorded": grant.get("permission_recorded", False),
             "public_display_allowed": "public_metadata_display" in grant.get("allowed_uses", []),
+            "evidence_lookup_allowed": "internal_evidence_lookup" in grant.get("allowed_uses", []),
             "permission_reference": grant.get("permission_reference", ""),
             "approved_by": grant.get("approved_by", ""),
             "reviewed_on": grant.get("reviewed_on"),
@@ -228,6 +230,7 @@ def upsert_grant(source_id: str, payload: GrantInput):
         "allowed_uses": (
             ["metadata_discovery"]
             + (["public_metadata_display"] if payload.public_display_allowed else [])
+            + (["internal_evidence_lookup"] if payload.evidence_lookup_allowed else [])
             if payload.permission_recorded else []
         ),
         "permission_reference": payload.permission_reference.strip(),
