@@ -46,7 +46,7 @@ button.addEventListener("click", async () => {
     });
     const body = await result.json();
     if (!result.ok) throw Error("AFONDO API: " + JSON.stringify(body.detail || body));
-    const url = server + "/?article=" + encodeURIComponent(body.id);
+    const url = server + "/analyze?article=" + encodeURIComponent(body.id);
     status.replaceChildren();
     const link = document.createElement("a");
     link.href = url;
