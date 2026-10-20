@@ -159,7 +159,7 @@ def ai_extract_article(article_id: str):
         raise HTTPException(status_code=409, detail=str(exc)) from exc
     run_id, article = _reserve_run(article_id, provider["provider"], provider["model"])
     try:
-        result = extract(article)
+        result = extract(article, provider)
         _complete(run_id, result)
     except ExtractionError as exc:
         _update_failure(run_id)
