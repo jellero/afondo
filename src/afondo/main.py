@@ -50,7 +50,8 @@ app.include_router(editorial_router)
 def homepage(article: str | None = None):
     if article:
         from fastapi.responses import RedirectResponse
-        return RedirectResponse(url="/analyze?article=" + article, status_code=307)
+        from urllib.parse import urlencode
+        return RedirectResponse(url="/analyze?" + urlencode({"article": article}), status_code=307)
     return FileResponse(
         Path(__file__).resolve().parents[2] / "web" / "portal.html",
         media_type="text/html",
