@@ -230,6 +230,22 @@ function openDrawer(item){
     a.href="/analyze?article="+encodeURIComponent(item.article_id);
     content.append(a);
   }
+  const profiles=item.history||{};
+  if(profiles.outlet || profiles.author){
+    content.append(el("h3","","Storico e rettifiche"));
+    content.append(el("p","drawer-copy",
+      "Cronologia parziale delle pubblicazioni con attribuzione verificata: non è un voto reputazionale."));
+    if(profiles.outlet){
+      const a=el("a","drawer-link secondary","Storico della testata →");
+      a.href="/history?"+new URLSearchParams({type:"outlet",id:profiles.outlet});
+      content.append(a);
+    }
+    if(profiles.author){
+      const a=el("a","drawer-link secondary","Storico della firma →");
+      a.href="/history?"+new URLSearchParams({type:"author",id:profiles.author});
+      content.append(a);
+    }
+  }
   const original=safeLink(item.url);
   if(original) content.append(link(original,"Leggi sul sito della fonte originale ↗",
                                   item.kind==="article"?"drawer-link secondary":"drawer-link"));
