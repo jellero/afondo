@@ -127,6 +127,12 @@ def analysis_detail(article_id: str) -> dict:
                     (latest["id"],),
                 ).fetchall()
             ]
+            from afondo.source_registry import configured_sources
+            permitted_leads = {
+                source["id"] for source in configured_sources()
+                if source["enabled"]
+                and "internal_evidence_lookup" in source["_grant"].get("allowed_uses", [])
+            }
             for item in items:
                 item["leads"] = [
                     dict(lead) for lead in conn.execute(
@@ -137,6 +143,9 @@ def analysis_detail(article_id: str) -> dict:
                            WHERE l.candidate_id=? ORDER BY l.rank_score DESC LIMIT 8""",
                         (item["id"],),
                     ).fetchall()
+                ] if permitted_leads else []
+                item["leads"] = [
+                    lead for lead in item["leads"] if lead["source_id"] in permitted_leads
                 ]
     return {"article_id": article_id, "runs": runs, "candidates": items,
             "current_run_id": latest["id"] if latest else None}
