@@ -74,6 +74,24 @@ def initialize() -> None:
             );
             CREATE INDEX IF NOT EXISTS idx_discovered_source_time
               ON discovered_items(source_id, discovered_at);
+            CREATE TABLE IF NOT EXISTS admin_sources (
+              id TEXT PRIMARY KEY,
+              definition_json TEXT NOT NULL,
+              deleted INTEGER NOT NULL DEFAULT 0,
+              updated_at TEXT NOT NULL
+            );
+            CREATE TABLE IF NOT EXISTS admin_source_grants (
+              source_id TEXT PRIMARY KEY,
+              grant_json TEXT NOT NULL,
+              updated_at TEXT NOT NULL
+            );
+            CREATE TABLE IF NOT EXISTS admin_ai (
+              provider TEXT PRIMARY KEY,
+              model TEXT NOT NULL,
+              key_ciphertext TEXT NOT NULL,
+              active INTEGER NOT NULL DEFAULT 0,
+              updated_at TEXT NOT NULL
+            );
             CREATE TABLE IF NOT EXISTS source_sync_state (
               source_id TEXT PRIMARY KEY,
               last_sync TEXT NOT NULL,
