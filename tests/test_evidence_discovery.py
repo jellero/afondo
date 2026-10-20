@@ -65,6 +65,14 @@ def test_candidates_are_metadata_leads_only_and_can_be_revoked(monkeypatch, tmp_
                      "secondo una fonte che ha pubblicato un comunicato ufficiale. "
                      "La misura è stata descritta in un rapporto separato."),
         }).json()
+        permission = client.put(
+            f"/api/v1/admin/articles/{article['id']}/processing",
+            headers=AUTH,
+            json={"allowed": True,
+                  "basis": "Offline test data authorized for simulated AI provider use",
+                  "checked_by": "Test reviewer"},
+        )
+        assert permission.status_code == 200
         client.put("/api/v1/admin/ai",headers=AUTH,json={
             "provider":"openai","model":"mock-model",
             "api_key":"testing-only-key","active":True,
