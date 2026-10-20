@@ -198,3 +198,66 @@ def test_provider_response_parsing_rejects_invalid_json():
             "output": [{"type": "message",
                         "content": [{"type": "output_text", "text": '{"claims": "garbage"}'}]}],
         })
+
+
+@pytest.mark.parametrize("provider,response", [
+    ("openai", {
+        "status": "completed", "output": [
+            {"type": "message", "content": [
+                {"type": "output_text", "text": '{"claims":[]}'}
+            ]}
+        ], "usage": {"input_tokens": 100, "output_tokens": 10}
+    }),
+    ("anthropic", {
+        "stop_reason": "end_turn", "content": [{"type": "text", "text": '{"claims":[]}'}],
+        "usage": {"input_tokens": 100, "output_tokens": 10}
+    }),
+    ("gemini", {
+        "candidates": [{
+            "finishReason": "STOP",
+            "content": {"parts": [{"text": '{"claims":[]}'}]}
+        }],
+        "usageMetadata": {"promptTokenCount": 100, "candidatesTokenCount": 10}
+    })
+])
+def test_all_provider_response_formats_are_parsed(provider, response):
+    from afondo.ai_extraction import _parse_provider_response
+    parsed, input_tokens, output_tokens = _parse_provider_response(provider, response)
+    assert parsed.claims == []
+    assert input_tokens == 100
+    assert output_tokens == 10
+
+
+def test_non_factual_candidate_cannot_be_promoted(monkeypatch, tmp_path):
+    from afondo import ai_workflow
+    def fake_opinion(article, _provider):
+        quote = "il risultato potrebbe avere un impatto significativo"
+        start = article["body"].find(quote)
+        assert start >= 0
+        return {
+            "provider": "openai", "model": "mock-model",
+            "candidates": [
+                {"quote": quote, "claim": "Opinione sugli impatti futuri",
+                 "kind": "opinion", "start_offset": start,
+                 "end_offset": start + len(quote)},
+            ],
+            "unanchored_or_duplicate": 0, "input_tokens": None,
+            "output_tokens": None, "prompt_version": "claim-extraction-v1",
+        }
+    monkeypatch.setattr(ai_workflow, "extract", fake_opinion)
+    with setup(monkeypatch, tmp_path) as client:
+        article, *_ = sample_article(client)
+        client.put("/api/v1/admin/ai", headers=ADMIN, json={
+            "provider": "openai", "model": "mock-model",
+            "api_key": "mock-secret", "active": True,
+        })
+        result = client.post(
+            f"/api/v1/admin/articles/{article['id']}/ai-extract", headers=ADMIN
+        )
+        assert result.status_code == 200
+        candidate = result.json()["candidates"][0]
+        decision = client.post(
+            f"/api/v1/admin/ai-candidates/{candidate['id']}/decision?decision=accept",
+            headers=ADMIN,
+        )
+        assert decision.status_code == 409
