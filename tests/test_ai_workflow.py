@@ -38,7 +38,17 @@ def sample_article(client):
         "text": first + " " + second,
     })
     assert response.status_code == 201
-    return response.json(), first, second
+    article = response.json()
+    permission = client.put(
+        f"/api/v1/admin/articles/{article['id']}/processing", headers=ADMIN,
+        json={
+            "allowed": True,
+            "basis": "Rights for external provider use confirmed in an offline test fixture.",
+            "checked_by": "Automated test",
+        }
+    )
+    assert permission.status_code == 200
+    return article, first, second
 
 
 def fake_extraction(article, _provider=None):
@@ -124,6 +134,14 @@ def test_no_oversize_ai_request(monkeypatch, tmp_path):
         article = client.post("/api/v1/articles", json={
             "title": "Articolo troppo lungo", "text": "Lorem ipsum. " * 1500,
         }).json()
+        allowed = client.put(
+            f"/api/v1/admin/articles/{article['id']}/processing",
+            headers=ADMIN,
+            json={"allowed": True,
+                  "basis": "Offline fixture with explicit license to send mock content",
+                  "checked_by": "Automated test"},
+        )
+        assert allowed.status_code == 200
         response = client.post(
             f"/api/v1/admin/articles/{article['id']}/ai-extract", headers=ADMIN
         )
