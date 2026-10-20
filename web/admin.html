@@ -75,6 +75,7 @@ code{background:#0d1724;color:var(--aqua);padding:2px 6px;border-radius:5px}
 <button type="button" class="tab" data-tab="overview" aria-selected="true">Panoramica</button>
 <button type="button" class="tab" data-tab="sources" aria-selected="false">Fonti</button>
 <button type="button" class="tab" data-tab="ai" aria-selected="false">Intelligenza artificiale</button>
+<button type="button" class="tab" data-tab="analysis" aria-selected="false">Analisi AI</button>
 <button type="button" class="tab" data-tab="monitor" aria-selected="false">Monitoraggio</button>
 </aside>
 <div>
@@ -149,6 +150,22 @@ code{background:#0d1724;color:var(--aqua);padding:2px 6px;border-radius:5px}
 </form>
 <hr><h3>Provider configurati</h3><div id="ai-list" class="list"></div>
 <div class="notice">Il test verifica soltanto che la chiave possa accedere alla lista dei modelli del provider. Non certifica l'accesso a un modello specifico, né attiva l'analisi automatica delle notizie.</div>
+</div>
+</section>
+<section class="hidden" id="view-analysis">
+<div class="panel">
+<h2>Analisi AI degli articoli</h2>
+<p class="muted">Seleziona un articolo già registrato in AFONDO. Dopo la conferma, il testo verrà inviato al provider AI attivo per individuare affermazioni verificabili. Nessun risultato verrà automaticamente considerato vero.</p>
+<div class="notice">Invia soltanto contenuti che puoi legittimamente elaborare con un servizio AI esterno. Il servizio non recupera fonti indipendenti e non esegue fact-checking autonomo. Limiti: 12.000 caratteri/articolo, massimo 25 richieste per 24 ore e 1 per articolo all'ora.</div>
+<div class="formgrid">
+<div class="field span2"><label for="analysis-article">Articolo</label><select id="analysis-article"><option value="">Seleziona un articolo</option></select></div>
+</div>
+<div class="actions"><button class="primary" id="analysis-run" type="button">Estrai le affermazioni con AI</button><button class="secondary" id="analysis-refresh" type="button">Aggiorna elenco</button></div>
+<p class="small muted" id="analysis-status" role="status">Nessuna analisi selezionata.</p>
+<hr>
+<h3>Ultima estrazione</h3><div id="analysis-runs" class="muted small"></div>
+<h3 style="margin-top:25px">Candidate estratte</h3><div id="analysis-candidates"></div>
+<p class="small muted">Solo le candidate marcate come fatto e accettate dall'amministratore entrano nell'elenco delle affermazioni da verificare. L'accettazione non costituisce conferma della loro verità.</p>
 </div>
 </section>
 <section class="hidden" id="view-monitor">
