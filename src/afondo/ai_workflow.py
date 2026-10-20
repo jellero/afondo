@@ -1,7 +1,7 @@
 """Auditable, permissioned AI candidate workflow with bounded inference requests."""
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from hashlib import sha256
 from uuid import uuid4
 
@@ -179,6 +179,20 @@ def get_article_ai(article_id: str):
 
 @router.post("/articles/{article_id}/ai-extract")
 def ai_extract_article(article_id: str):
+    # The manual button and scheduled worker obey the SAME article-specific
+    # permission requirement. Confirmation dialogs do not replace rights.
+    with connection() as conn:
+        permission = conn.execute(
+            "SELECT allowed,expires_on FROM article_processing_grants WHERE article_id=?",
+            (article_id,),
+        ).fetchone()
+    if not permission or not permission["allowed"] or (
+        permission["expires_on"] and permission["expires_on"] < date.today().isoformat()
+    ):
+        raise HTTPException(
+            status_code=409,
+            detail="Approve the article's external AI processing rights in /admin first",
+        )
     try:
         provider = active_provider()
     except ExtractionError as exc:
