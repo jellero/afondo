@@ -24,6 +24,17 @@
 - [ ] Verifica in rete degli endpoint e delle API partner
 - [ ] Ingestion scheduler quando i permessi sono disponibili
 
+## Milestone 0.6 — Pannello di amministrazione
+
+- [x] /admin con UI di gestione delle fonti (create/edit/archive)
+- [x] Grant e revoche documentate (metadata discovery, non AI full-text)
+- [x] Provider AI OpenAI / Anthropic / Gemini con chiavi cifrate
+- [x] Autenticazione a token, protezione HTTP remoto e chiavi non leggibili da API
+- [x] Verifica di connettività a endpoint modelli fissi, senza inferenza
+- [x] Monitoraggio ultimo stato delle sincronizzazioni e test offline
+- [ ] Revisione sicurezza, RBAC, MFA, audit e rate limits prima della produzione
+- [ ] Collegare il provider al motore AI di estrazione e verifica
+
 ## Milestone 1 — Motore serio di verifica
 
 - [ ] PostgreSQL, Alembic e storage dei documenti con provenienza
