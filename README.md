@@ -91,6 +91,11 @@ Resta soggetto a 25 richieste globali per 24 ore e agli altri limiti di
 esecuzione AI. Le candidate restano in revisione; la ricerca autonoma e
 l'interpretazione delle prove esterne non è ancora completa.
 
+Un secondo worker opzionale di discovery RSS/API (profilo
+`source-automation`, `AFONDO_ENABLE_SOURCE_SYNC=1`) può aggiornare
+automaticamente *solo i metadati delle fonti autorizzate*, al massimo una volta
+ogni ora. Non acquisisce il testo integrale degli articoli e non lo invia all'AI.
+
 È disponibile anche un **indice di piste documentali**: associa parole
 rilevanti delle candidate ai titoli in feed/API che consentono esplicitamente
 tale trattamento, senza trasformare i titoli in prove.
