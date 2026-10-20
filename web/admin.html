@@ -122,6 +122,7 @@ code{background:#0d1724;color:var(--aqua);padding:2px 6px;border-radius:5px}
 <form id="grant-form">
 <div class="formgrid">
 <div class="field span2"><label><input type="checkbox" id="g-recorded"> Ho verificato una licenza o autorizzazione per la discovery dei metadati</label></div>
+<div class="field span2"><label><input type="checkbox" id="g-display"> Ho verificato anche il diritto di mostrare pubblicamente titoli e metadati nel portale AFONDO</label><small>La pubblicazione è distinta dalla sola acquisizione dei metadati.</small></div>
 <div class="field span2"><label for="g-reference">Riferimento del permesso</label><textarea id="g-reference" rows="2" maxlength="1500" placeholder="Numero contratto, documento o URL condizioni"></textarea></div>
 <div class="field"><label for="g-by">Verificato da</label><input id="g-by" maxlength="160"></div>
 <div class="field"><label for="g-date">Data revisione</label><input id="g-date" type="date"></div>
@@ -174,7 +175,7 @@ code{background:#0d1724;color:var(--aqua);padding:2px 6px;border-radius:5px}
 <div class="toolbar">
   <div>
     <h2>Pubblicazione sul portale</h2>
-    <p class="muted">Gestisci categorie, notizie in evidenza e segnali visivi per gli articoli disponibili.</p>
+    <p class="muted">Approva gli articoli prima della pubblicazione, gestisci categorie e segnalazioni documentate.</p>
   </div>
   <a href="/" class="small" target="_blank" rel="noopener noreferrer">Visualizza il portale ↗</a>
 </div>
@@ -196,7 +197,7 @@ code{background:#0d1724;color:var(--aqua);padding:2px 6px;border-radius:5px}
       </select>
     </div>
     <div class="field"><label for="ed-status">Stato della revisione</label>
-      <select id="ed-status"><option value="draft">Bozza, non pubblicare avvisi</option><option value="approved">Approvata, mostra avvisi motivati</option></select>
+      <select id="ed-status"><option value="draft">Bozza, non pubblicare avvisi</option><option value="approved">Approvata, pubblica sul portale</option></select>
     </div>
     <div class="field span2">
       <label><input type="checkbox" id="ed-featured"> Metti in primo piano nella home</label>
