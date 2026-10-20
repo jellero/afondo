@@ -10,7 +10,7 @@ Questa repository contiene la base del motore **AFONDO Check**, non un fact-chec
 
 AFONDO include un pannello riservato disponibile su **[http://127.0.0.1:8000/admin](http://127.0.0.1:8000/admin)**, con gestione delle fonti, delle autorizzazioni e dei provider AI (OpenAI, Anthropic, Gemini). Le chiavi vengono cifrate con Fernet nel database e non sono mai ritornate dal backend.
 
-**Per entrare servono due variabili d'ambiente**, `AFONDO_ADMIN_TOKEN` e `AFONDO_ENCRYPTION_KEY`. Leggi le istruzioni passo passo in **[docs/ADMIN.md](docs/ADMIN.md)** prima di usare il pannello. Non pubblicare il pannello su Internet senza ulteriori protezioni. Nessuna scansione parte automaticamente; la verifica AI non è ancora collegata al provider.
+**Per entrare servono due variabili d'ambiente**, `AFONDO_ADMIN_TOKEN` e `AFONDO_ENCRYPTION_KEY`. Leggi le istruzioni passo passo in **[docs/ADMIN.md](docs/ADMIN.md)** prima di usare il pannello. Non pubblicare il pannello su Internet senza ulteriori protezioni. Nessuna scansione parte automaticamente; i provider ora alimentano l'estrazione AI su richiesta, mentre il fact-check con fonti esterne non è ancora automatizzato.
 
 ## Avvio locale
 
