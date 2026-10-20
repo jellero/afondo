@@ -69,6 +69,7 @@ def save_editorial_review(article_id: str, payload: EditorialInput):
         previous = conn.execute(
             "SELECT * FROM editorial_reviews WHERE article_id=?", (article_id,)
         ).fetchone()
+        changed = False
         if previous and previous["status"] == "approved" and payload.status == "approved":
             changed = (bool(previous["sensationalistic"]) != payload.sensationalistic
                        or bool(previous["out_of_context"]) != payload.out_of_context
@@ -95,8 +96,10 @@ def save_editorial_review(article_id: str, payload: EditorialInput):
              payload.note.strip(), str(payload.evidence_url) if payload.evidence_url else None, now),
         )
         public_changed = (
-            payload.status == "approved" or
-            (previous is not None and previous["status"] == "approved")
+            (payload.status == "approved"
+             and (previous is None or previous["status"] != "approved" or changed))
+            or (previous is not None and previous["status"] == "approved"
+                and payload.status == "draft")
         )
         if public_changed:
             if previous is None or previous["status"] != "approved":
