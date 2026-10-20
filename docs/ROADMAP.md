@@ -47,7 +47,9 @@
 - [x] Revisione editoriale esplicita e documentata di sensazionalismo/fuori contesto
 - [x] Permessi separati per acquisizione e pubblicazione metadati dei feed
 - [ ] Clustering multilingue serio per evento e misurazione reale delle tendenze
-- [ ] Preanalisi automatica in background delle prove prima della pubblicazione
+- [x] Worker opt-in di estrazione AI prepubblicazione su testi autorizzati
+- [x] Piste di documenti pertinenti via metadati concessi (non prove)
+- [ ] Ricerca e interpretazione delle prove originali, confronto fattuale e analisi del contesto
 - [ ] Qualità editoriale e revisione doppia sulle segnalazioni reputazionali
 - [ ] Test runtime, accessibilità e scalabilità del nuovo portale
 
@@ -72,7 +74,9 @@
 
 ## Milestone 3 — Affidabilità storica e scala
 
-- [ ] Provenienza editoriale, identificativi robusti e disambiguazione di omonimi
+- [x] Prima provenienza editoriale testata+dominio e firma nel contesto della testata, verificata da un revisore
+- [x] Dossier pubblici parziali con segnalazioni, prove esaminate e cronologia revisioni
+- [ ] Identità giornalisti robuste (oltre al byline), audit, contestazioni e disambiguazione di omonimi
 - [ ] Metriche su autore/testata solo con campioni idonei e audit indipendente
 - [ ] Procedura di reclamo e rettifica, data retention e privacy by design
 - [ ] Dashboard pubblica multi-lingua con API e analisi riproducibili
