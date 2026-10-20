@@ -72,6 +72,37 @@ docker compose --profile automation stop preanalysis
 
 **Importante:** si tratta di un processo locale avviato sul computer/server AFONDO, non di una funzione di ChatGPT che continua a operare autonomamente. In produzione è necessario un job worker affidabile, con code, retry, rate limit distribuiti e un budget monetario esplicito.
 
+## Aggiornamento continuo dei feed autorizzati
+
+AFONDO prevede un secondo worker indipendente, **solo per i metadati RSS/API** e
+solo per le fonti con `metadata_discovery` documentata. Non scarica gli
+articoli integrali e non li trasferisce al modello AI. Per abilitarlo, aggiungi
+al file `.env`:
+
+```dotenv
+AFONDO_ENABLE_SOURCE_SYNC=1
+AFONDO_SOURCE_SYNC_INTERVAL_SECONDS=3600
+```
+
+Poi esegui:
+
+```bash
+docker compose --profile source-automation up -d --build
+docker compose logs -f source-sync
+```
+
+Le scansioni avvengono, al massimo, una volta all'ora, rispettando anche i
+cooldown per provider, URL HTTPS approvati e permessi di ciascuna testata.
+Per interromperlo:
+`docker compose --profile source-automation stop source-sync`.
+
+**La pipeline è divisa in due**: il worker RSS aggiorna soltanto l'elenco
+delle notizie; il worker AI preanalizza soltanto articoli completi inseriti
+legalmente nel database e autorizzati uno per uno per l'uso AI. **Non esiste
+ancora un collegamento automatico dai titoli del feed al testo integrale
+dell'articolo.** Questo richiederà accordi per il full text e connettori
+dedicati conformi alle condizioni dei fornitori.
+
 ## Storico di testate e autori
 
 La pagina pubblica `/history` e le API `/api/v1/history` permettono di esplorare i dossier storici.
