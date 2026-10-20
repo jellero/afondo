@@ -293,7 +293,7 @@ def test_ai_connection(provider: Literal["openai", "anthropic", "gemini"]):
         headers["x-goog-api-key"] = secret
     req = urllib.request.Request(PROVIDERS[provider], headers=headers, method="GET")
     # HTTPS fixed endpoints, no user-configured URL and no redirects to carry secrets.
-    from afondo.source_ingestion import _NoRedirect
+    from afondo.source_ingestion import _NoRedirect, SourceSyncError
     opener = urllib.request.build_opener(_NoRedirect)
     try:
         with opener.open(req, timeout=8) as response:
@@ -302,6 +302,6 @@ def test_ai_connection(provider: Literal["openai", "anthropic", "gemini"]):
                     "note": "Provider credentials accepted by models endpoint; no AI analysis executed"}
     except urllib.error.HTTPError as exc:
         return {"provider": provider, "connected": False, "http_status": exc.code}
-    except (OSError, ValueError) as exc:
+    except (OSError, ValueError, SourceSyncError) as exc:
         # Avoid leaking keys/URLs from exception messages.
         raise HTTPException(status_code=502, detail="Provider connection failed") from exc
