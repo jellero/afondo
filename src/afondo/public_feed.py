@@ -169,6 +169,9 @@ def get_feed(topic: str = "tutti", sort: str = "recenti",
         }
         items = []
         for row in article_rows:
+            # User-submitted texts must never be public without editorial approval.
+            if row["editorial_status"] != "approved":
+                continue
             topic_id = row["topic"] or classify_topic(row["title"])
             assessment = _claim_assessments(conn, row["id"])
             items.append({
@@ -183,8 +186,16 @@ def get_feed(topic: str = "tutti", sort: str = "recenti",
                 "featured": bool(row["featured"]) and row["editorial_status"] == "approved",
                 "summary": "Consulta le affermazioni e le prove registrate in AFONDO.",
             })
-    name_by_id = {item["id"]: item["name"] for item in configured_sources()}
+    sources = configured_sources()
+    name_by_id = {item["id"]: item["name"] for item in sources}
+    display_allowed = {
+        src["id"] for src in sources
+        if src["enabled"] and
+        "public_metadata_display" in src["_grant"].get("allowed_uses", [])
+    }
     for row in discoveries:
+        if row["source_id"] not in display_allowed:
+            continue
         items.append({
             "id": "d-" + str(row["id"]), "kind": "discovery", "article_id": None,
             "title": row["title"], "url": row["url"],
@@ -232,7 +243,8 @@ def get_feed(topic: str = "tutti", sort: str = "recenti",
         "disclaimer": (
             "La frequenza di copertura non misura popolarità né verifica i fatti. "
             "Le segnalazioni 'sensazionalistico' o 'fuori contesto' richiedono "
-            "una revisione editoriale documentata. I feed solo metadati non sono verificati."
+            "una revisione editoriale documentata. I testi inviati richiedono approvazione "
+            "prima della pubblicazione. I feed solo metadati non sono verificati."
         ),
     }
 
