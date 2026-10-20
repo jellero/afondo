@@ -1,7 +1,5 @@
 """Offline tests for licensed pre-analysis and source/byline publication histories."""
 from datetime import date, timedelta
-import json
-
 from cryptography.fernet import Fernet
 from fastapi.testclient import TestClient
 
