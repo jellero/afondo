@@ -197,3 +197,19 @@ def test_byline_never_merges_across_different_publishers():
         byline_id("Mario Rossi", "Giornale B", "https://two.example/a")
     )
     assert outlet_id("Giornale A", "http://one.example/a") is None
+
+
+def test_manual_ai_extraction_cannot_bypass_processing_rights(monkeypatch, tmp_path):
+    with setup(monkeypatch, tmp_path) as client:
+        article_id = article(client)
+        client.put("/api/v1/admin/ai", headers=AUTH, json={
+            "provider":"openai","model":"mock-model",
+            "api_key":"fixture-only-secret", "active":True,
+        })
+        denied = client.post(
+            f"/api/v1/admin/articles/{article_id}/ai-extract",headers=AUTH
+        )
+        assert denied.status_code == 409
+        assert "processing rights" in denied.text
+        with connection() as conn:
+            assert conn.execute("SELECT COUNT(*) FROM ai_analysis_runs").fetchone()[0] == 0
