@@ -9,7 +9,6 @@ from __future__ import annotations
 import re
 from datetime import datetime, timezone, timedelta
 from collections import defaultdict
-from urllib.parse import urlsplit
 
 from fastapi import APIRouter, Query
 from afondo.db import connection
