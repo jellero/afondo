@@ -49,7 +49,7 @@ function tab(name) {
   for (const button of document.querySelectorAll("[data-tab]")) {
     button.setAttribute("aria-selected", String(button.dataset.tab === name));
   }
-  for (const section of ["overview", "sources", "ai", "analysis", "editorial", "monitor"]) {
+  for (const section of ["overview", "sources", "ai", "analysis", "preanalysis", "editorial", "monitor"]) {
     $("view-" + section).classList.toggle("hidden", section !== name);
   }
   if (name === "monitor") renderMonitor();
@@ -101,6 +101,7 @@ async function reloadAll() {
   renderMonitor();
   await reloadArticleQueue();
   await reloadEditorial();
+  await reloadRightsAndAttribution();
 }
 
 function renderSources() {
@@ -454,6 +455,7 @@ function showEditorial() {
   $("ed-out-of-context").checked = Boolean(article.out_of_context);
   $("ed-note").value = article.note || "";
   $("ed-evidence").value = article.evidence_url || "";
+  $("ed-change").value = "";
   $("ed-feedback").textContent = article.updated_at ?
     "Ultimo aggiornamento: " + article.updated_at : "Nessuna revisione editoriale";
 }
@@ -469,7 +471,8 @@ $("ed-form").addEventListener("submit", async event => {
     sensationalistic: $("ed-sensationalistic").checked,
     out_of_context: $("ed-out-of-context").checked,
     note: value("ed-note"),
-    evidence_url: value("ed-evidence") || null
+    evidence_url: value("ed-evidence") || null,
+    change_reason: value("ed-change")
   };
   const hasWarning = body.sensationalistic || body.out_of_context;
   if (body.status==="approved" && hasWarning &&
@@ -486,4 +489,78 @@ $("ed-form").addEventListener("submit", async event => {
     await reloadEditorial();
     flash(result.visible_warning ? "Segnalazione pubblicata sul portale." : "Scheda editoriale salvata.");
   } catch(error) {flash("Errore editoriale: "+error.message,true)}
+});
+
+let preanalysisRows=[],attributionRows=[];
+const fillSelect=(select,items)=> {
+ const prev=select.value;select.replaceChildren();
+ const empty=make("option","","Seleziona un articolo");empty.value="";select.append(empty);
+ for(const article of items){
+  const option=make("option","",article.title);
+  option.value=article.article_id;select.append(option);
+ }
+ if(items.some(a=>a.article_id===prev))select.value=prev;
+};
+async function reloadRightsAndAttribution(){
+ try{
+  const [pre,at]=await Promise.all([api("/preanalysis"),api("/attributions")]);
+  preanalysisRows=pre.items||[];attributionRows=at.items||[];
+  fillSelect($("pa-article"),preanalysisRows);
+  fillSelect($("at-article"),attributionRows);
+  $("pa-status").textContent=pre.eligible+" articoli autorizzati in attesa di preanalisi.";
+  showPreanalysis();showAttribution();
+ }catch(error){$("pa-status").textContent="Errore: "+error.message}
+}
+function showPreanalysis(){
+ const row=preanalysisRows.find(a=>a.article_id===$("pa-article").value);
+ $("pa-permission").classList.toggle("hidden",!row);
+ if(!row)return;
+ $("pa-allowed").checked=Boolean(row.allowed);
+ $("pa-basis").value=row.basis||"";
+ $("pa-checked").value=row.checked_by||"";
+ $("pa-expires").value=row.expires_on||"";
+}
+function showAttribution(){
+ const row=attributionRows.find(a=>a.article_id===$("at-article").value);
+ $("at-form").classList.toggle("hidden",!row);
+ if(!row)return;
+ $("at-outlet").checked=Boolean(row.outlet_confirmed);
+ $("at-byline").checked=Boolean(row.byline_confirmed);
+ $("at-checked").value=row.checked_by||"";
+ $("at-note").value=row.source_note||"";
+}
+$("pa-article").addEventListener("change",showPreanalysis);
+$("at-article").addEventListener("change",showAttribution);
+$("pa-refresh").addEventListener("click",reloadRightsAndAttribution);
+$("pa-permission").addEventListener("submit",async event=>{
+ event.preventDefault();
+ const id=$("pa-article").value;if(!id)return;
+ const body={allowed:$("pa-allowed").checked,basis:value("pa-basis"),
+             checked_by:value("pa-checked"),expires_on:value("pa-expires")||null};
+ try{
+  await api("/articles/"+encodeURIComponent(id)+"/processing",{method:"PUT",body});
+  flash("Autorizzazione AI aggiornata.");await reloadRightsAndAttribution();
+ }catch(error){flash(error.message,true)}
+});
+$("pa-run").addEventListener("click",async ()=>{
+ if(!window.confirm("Avviare una preanalisi di massimo 3 articoli autorizzati? Verranno inviati testi al provider AI e potrebbero esserci costi API."))return;
+ const button=$("pa-run");button.disabled=true;
+ try{
+  const result=await api("/preanalysis/once",{method:"POST"});
+  $("pa-status").textContent=result.processed+" elaborati, "+result.failed+" falliti, "+result.skipped+" saltati.";
+  if(result.error)flash(result.error,true);else flash("Preanalisi registrata. Le candidate devono ancora essere revisionate.");
+  await reloadRightsAndAttribution();await reloadArticleQueue();
+ }catch(error){flash(error.message,true)}
+ finally{button.disabled=false}
+});
+$("at-form").addEventListener("submit",async event=>{
+ event.preventDefault();
+ const id=$("at-article").value;if(!id)return;
+ const body={outlet_confirmed:$("at-outlet").checked,
+             byline_confirmed:$("at-byline").checked,
+             checked_by:value("at-checked"),source_note:value("at-note")};
+ try{
+  await api("/articles/"+encodeURIComponent(id)+"/attribution",{method:"PUT",body});
+  flash("Attribuzione registrata.");await reloadRightsAndAttribution();
+ }catch(error){flash(error.message,true)}
 });
