@@ -54,6 +54,12 @@ Il comando `python -m afondo.sync_sources --dry-run` elenca le fonti senza acced
 
 I connettori RSS/Atom/RDF e JSON configurabile salvano esclusivamente titolo, URL e data di pubblicazione. Per API proprietarie servono endpoint, contratto e integrazioni specifiche. È una pipeline di scoperta, non scraping di articoli completi.
 
+## Analisi AI su richiesta
+
+Nel pannello `/admin` è disponibile **Analisi AI**. Dopo aver configurato una chiave e un modello in **Intelligenza artificiale**, seleziona un articolo e conferma l'invio al provider. L'estrazione usa API strutturate OpenAI / Anthropic / Gemini; genera candidate ancorate a citazioni esatte, con revisione umana per promuoverle a `claims`.
+
+L'estrazione AI **non è un fact-check automatico**: non cerca documenti esterni né assegna punteggi di verità. Sono imposti limiti di input, output e richieste per contenere costi e abusi. Consulta [`docs/AI_EXTRACTION.md`](docs/AI_EXTRACTION.md) per API, costi, protezioni, diritti e setup.
+
 ## Limitazioni intenzionali
 
 Non esegue crawling di pagine HTML o acquisizione di articoli integrali; il modulo discovery opzionale registra solo metadati da feed/API autorizzati. Non traduce automaticamente, non verifica in autonomia le affermazioni, non attribuisce punteggi a persone o testate. Queste funzioni richiedono fonti lecite, validazione del metodo, gestione dei diritti e controlli più solidi.
