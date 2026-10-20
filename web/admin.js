@@ -83,6 +83,8 @@ $("logout").addEventListener("click", () => {
   $("logout").classList.add("hidden");
   $("login-error").textContent = "";
   sources = []; aiProviders = []; selectedId = null;
+  // Clear sensitive form state and in-memory references on logout.
+  window.location.reload();
 });
 
 async function reloadAll() {
