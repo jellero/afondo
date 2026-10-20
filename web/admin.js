@@ -140,6 +140,7 @@ function setSourceFields(source) {
 
 function setGrantFields(grant = {}) {
   $("g-recorded").checked = Boolean(grant.permission_recorded);
+  $("g-display").checked = Boolean(grant.public_display_allowed);
   $("g-reference").value = grant.permission_reference || "";
   $("g-by").value = grant.approved_by || "";
   $("g-date").value = grant.reviewed_on || "";
@@ -202,6 +203,7 @@ $("grant-form").addEventListener("submit", async event => {
   } catch { return flash("Mapping JSON non valido.", true); }
   const payload = {
     permission_recorded: $("g-recorded").checked,
+    public_display_allowed: $("g-display").checked,
     permission_reference: value("g-reference"), approved_by: value("g-by"),
     reviewed_on: value("g-date") || null, expires_on: value("g-expires") || null,
     endpoint: value("g-endpoint") || null, adapter: value("g-adapter"),
