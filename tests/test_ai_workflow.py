@@ -6,7 +6,7 @@ from cryptography.fernet import Fernet
 from fastapi.testclient import TestClient
 
 from afondo.ai_extraction import (
-    ExtractOutput, ExtractionError, SCHEMA, extract, request_spec, validated_candidates
+    ExtractOutput, ExtractionError, SCHEMA, request_spec, validated_candidates
 )
 from afondo.db import connection
 from afondo.main import app
