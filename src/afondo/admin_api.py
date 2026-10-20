@@ -183,11 +183,15 @@ def edit_source(source_id: str, payload: SourceInput):
         raise HTTPException(status_code=404, detail="Source not found")
     if payload.id != source_id:
         raise HTTPException(status_code=422, detail="Source ID cannot be changed")
-    old = current
+    stored = next(
+        entry for entry in source_catalog()["sources"] if entry["id"] == source_id
+    )
     changed_connection = (
-        old["site"] != str(payload.site)
-        or old["discovery_method"] != payload.discovery_method
-        or old["discovery_url"] != (str(payload.feed_url) if payload.feed_url else None)
+        stored["site"] != str(payload.site)
+        or stored["discovery"]["method"] != payload.discovery_method
+        or stored["discovery"].get("url") != (
+            str(payload.feed_url) if payload.feed_url else None
+        )
     )
     upsert_source(_definition(payload), invalidate_grant=changed_connection)
     return {"id": source_id, "status": "updated", "grant_reset": changed_connection}
