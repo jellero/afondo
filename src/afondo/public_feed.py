@@ -225,7 +225,8 @@ def get_feed(topic: str = "tutti", sort: str = "recenti",
     if query.strip():
         needle = query.strip().casefold()[:100]
         items = [item for item in items if needle in (item["title"] + " " + item["source"]).casefold()]
-    timestamp = lambda item: parse_date(item["published_at"]) or datetime.min.replace(tzinfo=timezone.utc)
+    def timestamp(item):
+        return parse_date(item["published_at"]) or datetime.min.replace(tzinfo=timezone.utc)
     if sort == "tendenza":
         items = [item for item in items if item["coverage_sources"] >= 2]
         items.sort(key=lambda item: (item["coverage_sources"], timestamp(item)), reverse=True)
