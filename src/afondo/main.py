@@ -15,6 +15,7 @@ from afondo.extract import extract_candidates
 from afondo.schemas import ArticleCreate, EvidenceCreate, EvidenceReview
 from afondo.scoring import score_article, score_claim
 from afondo.source_api import router as source_router
+from afondo.admin_api import router as admin_router
 
 
 def timestamp() -> str:
@@ -36,6 +37,7 @@ app = FastAPI(
 
 
 app.include_router(source_router)
+app.include_router(admin_router)
 
 
 @app.get("/")
@@ -54,6 +56,26 @@ def sources_page():
 def discovery_page():
     page = Path(__file__).resolve().parents[2] / "web" / "discoveries.html"
     return FileResponse(page, media_type="text/html")
+
+
+@app.get("/admin")
+def admin_page():
+    return FileResponse(
+        Path(__file__).resolve().parents[2] / "web" / "admin.html",
+        media_type="text/html",
+        headers={"Cache-Control": "no-store", "Content-Security-Policy": "default-src 'none'; "
+                 "style-src 'self' 'unsafe-inline'; script-src 'self'; "
+                 "connect-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'"},
+    )
+
+
+@app.get("/admin.js")
+def admin_script():
+    return FileResponse(
+        Path(__file__).resolve().parents[2] / "web" / "admin.js",
+        media_type="application/javascript",
+        headers={"Cache-Control": "no-store"},
+    )
 
 
 @app.get("/health")
