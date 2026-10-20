@@ -31,6 +31,7 @@ class EditorialInput(BaseModel):
     note: str = Field(default="", max_length=1200)
     evidence_url: HttpUrl | None = None
     status: Literal["draft", "approved"] = "draft"
+    change_reason: str = Field(default="", max_length=600)
 
 
 @router.get("")
@@ -65,6 +66,20 @@ def save_editorial_review(article_id: str, payload: EditorialInput):
         if not found:
             raise HTTPException(status_code=404, detail="Article not found")
         now = datetime.now(timezone.utc).isoformat()
+        previous = conn.execute(
+            "SELECT * FROM editorial_reviews WHERE article_id=?", (article_id,)
+        ).fetchone()
+        if previous and previous["status"] == "approved" and payload.status == "approved":
+            changed = (bool(previous["sensationalistic"]) != payload.sensationalistic
+                       or bool(previous["out_of_context"]) != payload.out_of_context
+                       or previous["note"] != payload.note.strip()
+                       or previous["evidence_url"] != (
+                           str(payload.evidence_url) if payload.evidence_url else None
+                       ))
+            if changed and len(payload.change_reason.strip()) < 15:
+                raise HTTPException(
+                    status_code=422, detail="Explain published revisions (15+ characters)"
+                )
         conn.execute(
             """INSERT INTO editorial_reviews
                (article_id,topic,status,featured,sensationalistic,out_of_context,
@@ -79,6 +94,27 @@ def save_editorial_review(article_id: str, payload: EditorialInput):
              int(payload.sensationalistic), int(payload.out_of_context),
              payload.note.strip(), str(payload.evidence_url) if payload.evidence_url else None, now),
         )
+        public_changed = (
+            payload.status == "approved" or
+            (previous is not None and previous["status"] == "approved")
+        )
+        if public_changed:
+            if previous is None or previous["status"] != "approved":
+                event_kind = "published"
+            elif payload.status == "draft":
+                event_kind = "withdrawn"
+            else:
+                event_kind = "revised"
+            conn.execute(
+                """INSERT INTO editorial_review_events
+                   (article_id,event_kind,status,sensationalistic,out_of_context,
+                    note,evidence_url,change_reason,happened_at)
+                   VALUES (?,?,?,?,?,?,?,?,?)""",
+                (article_id,event_kind,payload.status,int(payload.sensationalistic),
+                 int(payload.out_of_context),payload.note.strip(),
+                 str(payload.evidence_url) if payload.evidence_url else None,
+                 payload.change_reason.strip(),now),
+            )
     return {"article_id": article_id, "status": payload.status,
             "visible_warning": payload.status == "approved"
             and (payload.sensationalistic or payload.out_of_context),
