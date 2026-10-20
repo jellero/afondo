@@ -4,7 +4,7 @@ Percorso locale: **http://127.0.0.1:8000/admin**
 
 Il pannello consente di aggiungere, aggiornare e archiviare fonti; registrare autorizzazioni per la metadata discovery; configurare chiavi di provider AI (OpenAI, Anthropic, Gemini), conservarle cifrate e verificarne la raggiungibilità. Include stato delle fonti e ultima sincronizzazione.
 
-**Non integra ancora le chiamate AI nel motore di fact-checking e non effettua crawling su fonti non autorizzate.**
+**Le chiamate AI sono ora collegate all'estrazione di affermazioni su richiesta, ma non alla verifica autonoma tramite fonti esterne.** Nessuna fonte senza autorizzazione viene sottoposta a crawling.
 
 ## Configurazione una tantum
 
@@ -61,7 +61,7 @@ Le API per la sync delle fonti continuano a richiedere `AFONDO_INGEST_TOKEN` ind
 - Test autenticato server-side verso la lista modelli del provider; non invia articoli e non effettua inferenze.
 - Gli endpoint di test sono *fissi* nel codice; il browser non fornisce URL e il backend non effettua redirect che potrebbero inoltrare chiavi a un'altra origine.
 
-Il test di connessione **non dimostra** che il modello specifico sia accessibile o che il motore AFONDO Check lo stia usando. La pipeline di analisi resta separata e non ancora implementata.
+Il test di connessione **non dimostra** che il modello specifico supporti l'output strutturato. Per verificare la reale compatibilità usa la scheda **Analisi AI** su un articolo che puoi lecitamente elaborare. Il fact-check tramite fonti esterne resta separato e non ancora automatizzato.
 
 ## Nuova sezione: Analisi AI
 
