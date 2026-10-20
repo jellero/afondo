@@ -33,7 +33,9 @@
 - [x] Verifica di connettività a endpoint modelli fissi, senza inferenza
 - [x] Monitoraggio ultimo stato delle sincronizzazioni e test offline
 - [ ] Revisione sicurezza, RBAC, MFA, audit e rate limits prima della produzione
-- [ ] Collegare il provider al motore AI di estrazione e verifica
+- [x] Collegare il provider selezionato all'estrazione strutturata delle affermazioni
+- [x] Candidate ancorate al testo, revisione manuale e storico delle esecuzioni
+- [ ] Estendere la pipeline al reperimento autonomo di prove e al loro confronto
 
 ## Milestone 1 — Motore serio di verifica
 
