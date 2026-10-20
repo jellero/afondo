@@ -47,7 +47,9 @@ async function loadDetail(id){
   for(const [number,label] of [
     [data.summary.article_count,"Articoli catalogati"],
     [data.summary.articles_with_context_note,"Segnalazioni sul contesto"],
-    [data.summary.articles_with_sensationalism_note,"Segnalazioni sul titolo"]
+    [data.summary.articles_with_sensationalism_note,"Segnalazioni sul titolo"],
+    [data.summary.articles_with_accepted_evidence,"Articoli con prove esaminate"],
+    [data.summary.editorial_revisions,"Revisioni editoriali"]
   ]){const cell=node("div");cell.append(node("strong","",number),node("span","",label));counts.append(cell)}
   target.append(counts,node("p","disclaimer",data.summary.disclaimer));
   if(data.summary.sample_status==="limited")
@@ -63,6 +65,9 @@ async function loadDetail(id){
     if(article.flags.sensationalistic)tags.push("Titolo sensazionalistico (revisione editoriale)");
     if(tags.length)section.append(node("p","",tags.join(" · ")));
     if(article.note)section.append(node("p","",article.note));
+    if(article.accepted_evidence_count)
+      section.append(node("p","",
+        article.accepted_evidence_count+" elementi probatori accettati per questo articolo; non sono automaticamente conferme indipendenti."));
     const docs=safeUrl(article.evidence_url);
     if(docs){const a=node("a","","Motivazione / prova ↗");a.href=docs;a.rel="noopener noreferrer";a.target="_blank";section.append(a)}
     if(article.revisions.length){
