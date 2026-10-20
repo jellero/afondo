@@ -107,6 +107,18 @@ def initialize() -> None:
               claim_id TEXT REFERENCES claims(id)
             );
             CREATE INDEX IF NOT EXISTS idx_ai_candidates_run ON ai_candidates(run_id);
+            CREATE TABLE IF NOT EXISTS editorial_reviews (
+              article_id TEXT PRIMARY KEY REFERENCES articles(id) ON DELETE CASCADE,
+              topic TEXT,
+              status TEXT NOT NULL DEFAULT 'draft',
+              featured INTEGER NOT NULL DEFAULT 0,
+              sensationalistic INTEGER NOT NULL DEFAULT 0,
+              out_of_context INTEGER NOT NULL DEFAULT 0,
+              note TEXT NOT NULL DEFAULT '',
+              evidence_url TEXT,
+              updated_at TEXT NOT NULL
+            );
+            CREATE INDEX IF NOT EXISTS idx_editorial_status ON editorial_reviews(status,featured);
             CREATE TABLE IF NOT EXISTS admin_sources (
               id TEXT PRIMARY KEY,
               definition_json TEXT NOT NULL,
