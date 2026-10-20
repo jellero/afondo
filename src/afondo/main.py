@@ -19,6 +19,8 @@ from afondo.admin_api import router as admin_router
 from afondo.ai_workflow import router as ai_workflow_router
 from afondo.public_feed import router as public_feed_router
 from afondo.editorial_api import router as editorial_router
+from afondo.preanalysis import router as preanalysis_router
+from afondo.history import router as history_router, admin_router as attribution_router
 
 
 def timestamp() -> str:
@@ -44,6 +46,9 @@ app.include_router(admin_router)
 app.include_router(ai_workflow_router)
 app.include_router(public_feed_router)
 app.include_router(editorial_router)
+app.include_router(preanalysis_router)
+app.include_router(history_router)
+app.include_router(attribution_router)
 
 
 @app.get("/")
@@ -68,6 +73,22 @@ def portal_css():
 def portal_js():
     return FileResponse(Path(__file__).resolve().parents[2] / "web" / "portal.js",
                         media_type="application/javascript")
+
+
+@app.get("/history")
+def history_page():
+    return FileResponse(
+        Path(__file__).resolve().parents[2] / "web" / "history.html",
+        media_type="text/html",
+    )
+
+
+@app.get("/history.js")
+def history_script():
+    return FileResponse(
+        Path(__file__).resolve().parents[2] / "web" / "history.js",
+        media_type="application/javascript",
+    )
 
 
 @app.get("/analyze")
