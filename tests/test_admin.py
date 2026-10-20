@@ -188,3 +188,34 @@ def test_ai_connection_uses_fixed_endpoint_and_no_article_body(monkeypatch, tmp_
         assert tested.json()["connected"] is True
         assert seen["url"] == "https://api.openai.com/v1/models"
         assert seen["header"] == "Bearer sk-mock-key"
+
+
+def test_ai_credential_requires_master_key(monkeypatch, tmp_path):
+    with setup(monkeypatch, tmp_path) as client:
+        monkeypatch.delenv("AFONDO_ENCRYPTION_KEY")
+        result = client.put("/api/v1/admin/ai", headers=AUTH, json={
+            "provider": "gemini", "model": "gemini-3.5-flash",
+            "api_key": "mock-secret", "active": True,
+        })
+        assert result.status_code == 503
+        assert client.get("/api/v1/admin/ai", headers=AUTH).json()["items"] == []
+
+
+def test_active_provider_is_unique(monkeypatch, tmp_path):
+    with setup(monkeypatch, tmp_path) as client:
+        for provider in ("openai", "anthropic"):
+            response = client.put("/api/v1/admin/ai", headers=AUTH, json={
+                "provider": provider, "model": "mock-model",
+                "api_key": "mock-secret-" + provider, "active": True
+            })
+            assert response.status_code == 200
+        items = client.get("/api/v1/admin/ai", headers=AUTH).json()["items"]
+        assert len([item for item in items if item["active"]]) == 1
+        assert next(item for item in items if item["active"])["provider"] == "anthropic"
+
+
+def test_admin_rejects_plain_http_remote_host(monkeypatch, tmp_path):
+    with setup(monkeypatch, tmp_path):
+        with TestClient(app, base_url="http://afondo.example.com") as client:
+            result = client.get("/api/v1/admin/status", headers=AUTH)
+            assert result.status_code == 403
