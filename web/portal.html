@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="AFONDO: le notizie, le fonti originali e i segnali di verifica. Una lettura più informata, senza giudizi inventati.">
+  <meta name="theme-color" content="#10212a">
+  <title>AFONDO — Le notizie, viste a fondo.</title>
+  <link rel="stylesheet" href="/portal.css">
+  <script src="/portal.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#contenuti">Salta alle notizie</a>
+  <header class="site-header">
+    <div class="header-top shell">
+      <a href="/" class="wordmark" aria-label="AFONDO, torna alla home">AFONDO<span aria-hidden="true">.</span></a>
+      <div class="header-right">
+        <span class="header-label">NEWS, WITH CONTEXT.</span>
+        <a class="header-action" href="/analyze">Verifica una notizia <span aria-hidden="true">↗</span></a>
+      </div>
+    </div>
+    <div class="header-lower">
+      <div class="shell header-controls">
+        <nav class="primary-nav" aria-label="Navigazione principale">
+          <a href="/" aria-current="page">Notizie</a>
+          <a href="/sources">Le fonti</a>
+          <a href="/analyze">Analizza</a>
+        </nav>
+        <label class="search-field">
+          <span aria-hidden="true">⌕</span>
+          <span class="sr-only">Cerca notizie</span>
+          <input id="search" type="search" autocomplete="off" maxlength="100" placeholder="Cerca una notizia...">
+          <kbd>/</kbd>
+        </label>
+      </div>
+    </div>
+  </header>
+
+  <main id="contenuti" class="shell">
+    <section class="welcome" aria-labelledby="intro-title">
+      <div class="eyebrow"><span class="pulse-dot"></span> IL PUNTO SULLE NOTIZIE</div>
+      <div class="welcome-row">
+        <div>
+          <h1 id="intro-title">Le notizie, <em>viste a fondo.</em></h1>
+          <p class="intro-copy">Tutto ciò che succede, con un'indicazione chiara di quello che sappiamo, quello che manca e quello che è stato verificato.</p>
+        </div>
+        <div class="intro-side">
+          <span class="intro-side-icon" aria-hidden="true">◎</span>
+          <div><strong>Prima le prove.</strong><span>Un colore non sostituisce una fonte.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="topics-section" aria-labelledby="topics-title">
+      <div class="section-overline">
+        <h2 id="topics-title">Esplora per argomento</h2>
+        <span>Scegli cosa ti interessa</span>
+      </div>
+      <div class="topic-scroll" role="group" aria-label="Categorie delle notizie" id="topics">
+        <button class="topic active" data-topic="tutti" type="button" aria-pressed="true">Tutte</button>
+        <button class="topic" data-topic="attualita" type="button" aria-pressed="false">Attualità</button>
+        <button class="topic" data-topic="politica" type="button" aria-pressed="false">Politica</button>
+        <button class="topic" data-topic="economia" type="button" aria-pressed="false">Economia</button>
+        <button class="topic" data-topic="mondo" type="button" aria-pressed="false">Mondo</button>
+        <button class="topic" data-topic="tecnologia" type="button" aria-pressed="false">Tecnologia</button>
+        <button class="topic" data-topic="scienza" type="button" aria-pressed="false">Scienza</button>
+        <button class="topic" data-topic="salute" type="button" aria-pressed="false">Salute</button>
+        <button class="topic" data-topic="ambiente" type="button" aria-pressed="false">Ambiente</button>
+        <button class="topic" data-topic="sport" type="button" aria-pressed="false">Sport</button>
+        <button class="topic" data-topic="cultura" type="button" aria-pressed="false">Cultura</button>
+      </div>
+    </section>
+
+    <div class="main-layout">
+      <div class="editorial-column">
+        <section class="spotlight" aria-labelledby="spotlight-title" id="spotlight-section">
+          <div class="section-overline"><h2 id="spotlight-title">In primo piano</h2><span id="spotlight-caption">Selezione e ultimi aggiornamenti</span></div>
+          <div id="hero" class="hero skeleton-hero" aria-live="polite">
+            <div class="hero-inner">
+              <span class="hero-kicker">AFONDO / LETTURA CONSAPEVOLE</span>
+              <h3>Dietro ogni titolo c'è una storia. E delle prove.</h3>
+              <p>Il tuo spazio per leggere le notizie con più contesto.</p>
+              <a href="/analyze" class="hero-link">Inizia con una notizia <span aria-hidden="true">→</span></a>
+            </div>
+          </div>
+        </section>
+
+        <section class="news-section" aria-labelledby="feed-title">
+          <div class="feed-heading">
+            <div class="section-overline"><h2 id="feed-title">Il tuo aggiornamento</h2><span id="count">Caricamento...</span></div>
+            <div class="segmented" role="group" aria-label="Ordina notizie">
+              <button data-sort="recenti" class="active" type="button" aria-pressed="true">Recenti</button>
+              <button data-sort="tendenza" type="button" aria-pressed="false">In tendenza</button>
+              <button data-sort="verificate" type="button" aria-pressed="false">Analizzate</button>
+            </div>
+          </div>
+          <div class="feed-helper" id="feed-helper">Le notizie sono presentate con lo stato della verifica già disponibile, senza analisi AI eseguite durante la lettura.</div>
+          <div id="news-list" class="news-list" aria-live="polite">
+            <div class="loading-line"></div><div class="loading-line short"></div>
+          </div>
+          <button id="load-more" type="button" class="load-more" hidden>Mostra altre notizie <span aria-hidden="true">↓</span></button>
+        </section>
+      </div>
+
+      <aside class="rail" aria-label="Approfondimenti AFONDO">
+        <section class="rail-panel radar-panel">
+          <div class="rail-icon" aria-hidden="true">✳</div>
+          <span class="rail-eyebrow">IL METODO AFONDO</span>
+          <h2>Il colore è solo l'inizio.</h2>
+          <p>Ogni indicatore deve essere spiegabile. Apri una notizia per vedere le informazioni disponibili e tornare alla fonte originale.</p>
+          <div class="signal-legend">
+            <div><span class="signal-dot green"></span><span><strong>Supportata da prove</strong><small>Alcune affermazioni hanno prove revisionate</small></span></div>
+            <div><span class="signal-dot amber"></span><span><strong>Da contestualizzare</strong><small>Segnalazione motivata e revisionata</small></span></div>
+            <div><span class="signal-dot red"></span><span><strong>Affermazioni contestate</strong><small>Prove accettate in contrasto</small></span></div>
+            <div><span class="signal-dot slate"></span><span><strong>Non ancora verificata</strong><small>Non significa falsa né vera</small></span></div>
+          </div>
+          <a class="method-link" href="/analyze">Come funziona la verifica <span aria-hidden="true">↗</span></a>
+        </section>
+
+        <section class="rail-panel transparency-panel">
+          <div class="rail-top"><span class="rail-eyebrow">TRASPARENZA</span><span class="outline-mark" aria-hidden="true">↗</span></div>
+          <h2>La fonte resta la fonte.</h2>
+          <p>AFONDO collega le notizie ai siti originali. Non sostituisce il giornale: ti aiuta a leggerlo meglio.</p>
+          <a href="/sources">Consulta le fonti disponibili <span aria-hidden="true">→</span></a>
+        </section>
+
+        <section class="rail-panel small-panel">
+          <span class="rail-eyebrow">UNO SGUARDO DIVERSO</span>
+          <h2>Hai letto qualcosa che non ti convince?</h2>
+          <p>Puoi registrare un testo per analizzarlo con AFONDO.</p>
+          <a class="small-panel-cta" href="/analyze">Analizza una notizia ↗</a>
+        </section>
+      </aside>
+    </div>
+
+    <section class="bottom-note">
+      <div class="bottom-sigil">A.</div>
+      <div><strong>Informazione più chiara, non giudizi affrettati.</strong><p>Una segnalazione editoriale descrive problemi documentati nel contenuto, non l'intenzione di un autore. Le notizie disponibili solo come metadati restano “non verificate”.</p></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="shell footer-inner">
+      <span class="wordmark">AFONDO<span>.</span></span>
+      <span>Vai oltre il titolo. Risali alle fonti.</span>
+      <nav aria-label="Link utili"><a href="/sources">Fonti</a><a href="/analyze">Verifica</a><a href="/admin">Amministrazione</a></nav>
+    </div>
+  </footer>
+
+  <div id="drawer-layer" class="drawer-layer" hidden>
+    <div id="drawer-scrim" class="drawer-scrim"></div>
+    <aside id="drawer" class="drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-title" tabindex="-1">
+      <div class="drawer-head"><span class="drawer-brand">AFONDO<span>.</span> / DETTAGLIO</span><button id="drawer-close" class="drawer-close" type="button" aria-label="Chiudi scheda">✕</button></div>
+      <div id="drawer-body"></div>
+    </aside>
+  </div>
+</body>
+</html>
