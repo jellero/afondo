@@ -2,14 +2,14 @@
 
 ## Obiettivo
 
-L'area [`/admin`](http://127.0.0.1:8000/admin) ora dispone della sezione **Analisi AI**: scegli un articolo già presente nel database, confermi esplicitamente l'invio del testo al provider esterno, avvii l'estrazione e rivedi le affermazioni candidate.
+L'area [`/admin`](http://127.0.0.1:8000/admin) ora dispone della sezione **Analisi AI**: scegli un articolo già presente nel database, registri prima il diritto di inviarne il testo al provider esterno nella scheda **Preanalisi e storico**, confermi l'invio, avvii l'estrazione e rivedi le affermazioni candidate.
 
 La pipeline separa tre concetti:
 1. **Estrazione semantica** — il modello identifica affermazioni fattuali, opinioni, previsioni o formulazioni ambigue, con citazioni verbatim ancorate al testo.
 2. **Revisione editoriale** — un amministratore accetta o rifiuta ciascuna candidata. Solo quelle classificate `factual` possono entrare nel registro `claims`.
 3. **Verifica delle prove** — rimane distinta. Un'affermazione candidata non è confermata, contestata o smentita finché non esistono prove esaminate nel motore di scoring.
 
-**Non è ancora disponibile un fact-checker automatico completo.** L'AI non effettua autonomamente web search, consultazione di documenti o confronti indipendenti; le nuove candidate iniziano senza prove e senza un punteggio di verità.
+**Non è ancora disponibile un fact-checker automatico completo.** L'AI non effettua autonomamente web search né legge i documenti originali: un successivo modulo può però confrontare le candidate con brevi estratti verificati, individuando differenze letterali che richiedono revisione. Le nuove candidate iniziano senza prove e senza un punteggio di verità. Vedi [DOCUMENT_VERIFICATION.md](DOCUMENT_VERIFICATION.md).
 
 ## Collegamento dei provider
 
@@ -30,7 +30,7 @@ Documentazione dei formati (verificata nel 2026):
 
 ## Costi e limiti
 
-- Ogni richiesta è **esplicita**, con conferma in UI prima di inviare testo e consumare crediti API.
+- L'elaborazione manuale richiede conferma in UI; il worker periodico è disabilitato di default, richiede attivazione esplicita e l'autorizzazione documentata per ciascun articolo prima di inviare testi e consumare crediti API.
 - Il testo non deve superare 12.000 caratteri. Non viene inviato un testo parziale nascosto: articoli più lunghi vengono respinti con HTTP 422.
 - Il modello può restituire massimo 12 candidate e usa un budget di massimo 2.200 token di output.
 - Rate limit interno: massimo **25 tentativi globali ogni 24 ore** e **1 tentativo per articolo ogni 60 minuti**. Sono contabilizzati anche i fallimenti per contenere abusi.
@@ -61,11 +61,11 @@ Tutte le API richiedono `X-Admin-Token`. L'operazione non attiva alcuna scansion
 
 ## Esempio di flusso
 
-1. Vai sul portale `/` e registra un testo che hai il diritto di elaborare, oppure usa l'estensione Chrome su richiesta.
+1. Apri `/analyze` e registra un testo che hai il diritto di elaborare, oppure usa l'estensione Chrome su richiesta.
 2. In `/admin` configura un provider AI con chiave e modello; testa la connessione se necessario.
-3. Vai su `Analisi AI`, scegli l'articolo e conferma l'estrazione.
+3. Vai in `/admin` → **Preanalisi e storico**, documenta il permesso del singolo articolo per l'invio all'AI. Poi scegli l'articolo nella scheda `Analisi AI` e conferma l'estrazione, oppure attiva il worker opzionale.
 4. Esamina ciascuna frase. Accetta soltanto candidate fattuali pertinenti.
-5. Consulta l'articolo originale e aggiungi fonti probatorie attraverso gli endpoint `/api/v1/claims/.../evidence`; verifica manualmente la prova prima di approvarla.
+5. In `Documenti e contesto` registra estratti brevi di documenti, fai verificare la provenienza da un secondo revisore, confronta i dati ed eventualmente promuovi una corrispondenza a prova pending. È possibile usare anche gli endpoint `/api/v1/claims/.../evidence`. La prova deve essere revisionata separatamente prima di incidere nello scoring.
 6. Finché non esistono prove accettate, AFONDO mantiene la classificazione **insufficient_evidence**.
 
 ## Privacy e diritti
