@@ -103,6 +103,21 @@ revisionate** e non generano automaticamente giudizi sui fatti.
 L'elaborazione continua è disabilitata di default: vedi
 [PREANALYSIS_HISTORY.md](PREANALYSIS_HISTORY.md) per avvio, permessi e limiti.
 
+## Nuova sezione: Documenti e contesto
+
+La sezione **Documenti e contesto** consente di registrare estratti
+verificabili di documenti originali, farli approvare da un secondo
+revisore, rilevare automaticamente differenze letterali in numeri e anni
+e documentare la pertinenza ai claim. È possibile creare una prova
+**in attesa di revisione**, senza cambiare automaticamente gli indicatori.
+
+Nessun URL inserito è scaricato da AFONDO. Non caricare testi senza
+un titolo di utilizzo documentato. L'approvazione di un estratto non
+conferma la verità del claim e non attribuisce punteggi a giornalisti
+o testate.
+
+Vedi [DOCUMENT_VERIFICATION.md](DOCUMENT_VERIFICATION.md).
+
 ## API protette
 
 Tutte le seguenti rotte richiedono `X-Admin-Token`:
