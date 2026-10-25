@@ -110,6 +110,19 @@ disponibile una valutazione automatica dei documenti probatori.
 
 Vedi [PREANALYSIS_HISTORY.md](PREANALYSIS_HISTORY.md).
 
+## Cosa aggiunge il confronto documentale
+
+Nel pannello `/admin` → Documenti e contesto il revisore può indicizzare
+brevi estratti di fonti ufficiali, verificarne l'origine e prepararne il
+confronto con le affermazioni. La prima versione rileva differenze
+esplicite tra percentuali e anni, senza inferire che un articolo sia
+falso o fuori contesto.
+
+La revisione documentale e la registrazione della prova sono separate
+dalle segnalazioni colorate del portale. Le prove collegate a documenti
+poi ritirati cessano di contribuire al conteggio dell'evidenza.
+Vedi [DOCUMENT_VERIFICATION.md](DOCUMENT_VERIFICATION.md).
+
 ## Limiti della versione attuale
 
 - Il feed non è ancora alimentato da testate autorizzate in produzione.
