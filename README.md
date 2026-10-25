@@ -101,6 +101,26 @@ rilevanti delle candidate ai titoli in feed/API che consentono esplicitamente
 tale trattamento, senza trasformare i titoli in prove.
 Guida completa: [docs/PREANALYSIS_HISTORY.md](docs/PREANALYSIS_HISTORY.md).
 
+## Verifica documentale e confronto del contesto
+
+Nel pannello `/admin` → **Documenti e contesto** si possono registrare
+estratti brevi di fonti originali con URL HTTPS, posizione precisa,
+riferimento dei diritti e provenienza. Serve un secondo revisore per approvare
+il documento; soltanto dopo il sistema lo abbina alle affermazioni AI
+potenzialmente pertinenti.
+
+Il confronto deterministico segnala **anni e numeri esplicitamente diversi**
+quando presenti nel claim e nel documento. Sono *piste da investigare*,
+non etichette «falso», «fuori contesto» o «sensazionalistico». Solo un
+revisore può promuovere un confronto pertinente a prova `pending`; una
+revisione separata è necessaria per incidere sul punteggio delle affermazioni.
+Il ritiro di un documento sospende l'efficacia delle prove a esso collegate.
+
+Non sono ancora presenti ricerca autonoma universale delle fonti, lettura
+del testo integrale dei documenti o verdetti AI senza revisione. Per le
+limitazioni e il flusso operativo vedi
+[docs/DOCUMENT_VERIFICATION.md](docs/DOCUMENT_VERIFICATION.md).
+
 ## Registro fonti e metadata discovery
 
 Il catalogo di 20 sorgenti è integrato nel backend. Apri [`/sources`](http://127.0.0.1:8000/sources) e [`/news`](http://127.0.0.1:8000/news) per i metadati individuati, oppure `GET /api/v1/sources` per visualizzare tipologia, metodo di discovery e stato del permesso. Le sorgenti includono RaiNews, DW, BBC, Euronews, France 24, Agência Brasil, Al Jazeera, Il Post, ANSA, AP, Reuters, Guardian, Africanews, NHK, The Conversation, ISTAT, Eurostat, NASA/JPL, UN News e Pagella Politica.
