@@ -147,6 +147,49 @@ def initialize() -> None:
             );
             CREATE INDEX IF NOT EXISTS idx_editorial_events_article
               ON editorial_review_events(article_id, happened_at);
+            CREATE TABLE IF NOT EXISTS evidence_documents (
+              id TEXT PRIMARY KEY,
+              title TEXT NOT NULL,
+              url TEXT NOT NULL,
+              publisher TEXT NOT NULL,
+              source_group TEXT NOT NULL,
+              source_kind TEXT NOT NULL,
+              excerpt TEXT NOT NULL,
+              locator TEXT NOT NULL,
+              permission_reference TEXT NOT NULL,
+              recorded_by TEXT NOT NULL,
+              publication_date TEXT,
+              status TEXT NOT NULL CHECK (
+                status IN ('submitted','approved','rejected','retired')
+              ),
+              created_at TEXT NOT NULL,
+              reviewed_at TEXT,
+              reviewed_by TEXT,
+              review_note TEXT
+            );
+            CREATE INDEX IF NOT EXISTS idx_evidence_documents_status
+              ON evidence_documents(status,created_at);
+            CREATE TABLE IF NOT EXISTS document_claim_matches (
+              id TEXT PRIMARY KEY,
+              candidate_id TEXT NOT NULL REFERENCES ai_candidates(id) ON DELETE CASCADE,
+              document_id TEXT NOT NULL REFERENCES evidence_documents(id),
+              match_fraction REAL NOT NULL,
+              overlap_terms TEXT NOT NULL,
+              signals_json TEXT NOT NULL,
+              review_status TEXT NOT NULL DEFAULT 'pending',
+              reviewer_note TEXT,
+              reviewed_by TEXT,
+              reviewed_at TEXT,
+              created_at TEXT NOT NULL,
+              UNIQUE(candidate_id,document_id)
+            );
+            CREATE INDEX IF NOT EXISTS idx_context_matches_status
+              ON document_claim_matches(review_status,created_at);
+            CREATE TABLE IF NOT EXISTS document_evidence_links (
+              match_id TEXT PRIMARY KEY REFERENCES document_claim_matches(id),
+              evidence_id TEXT UNIQUE NOT NULL REFERENCES evidence(id),
+              document_id TEXT NOT NULL REFERENCES evidence_documents(id)
+            );
             CREATE TABLE IF NOT EXISTS editorial_reviews (
               article_id TEXT PRIMARY KEY REFERENCES articles(id) ON DELETE CASCADE,
               topic TEXT,
