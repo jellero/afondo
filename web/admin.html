@@ -76,6 +76,7 @@ code{background:#0d1724;color:var(--aqua);padding:2px 6px;border-radius:5px}
 <button type="button" class="tab" data-tab="sources" aria-selected="false">Fonti</button>
 <button type="button" class="tab" data-tab="ai" aria-selected="false">Intelligenza artificiale</button>
 <button type="button" class="tab" data-tab="analysis" aria-selected="false">Analisi AI</button>
+<button type="button" class="tab" data-tab="documents" aria-selected="false">Documenti e contesto</button>
 <button type="button" class="tab" data-tab="preanalysis" aria-selected="false">Preanalisi e storico</button>
 <button type="button" class="tab" data-tab="editorial" aria-selected="false">Pubblicazione</button>
 <button type="button" class="tab" data-tab="monitor" aria-selected="false">Monitoraggio</button>
@@ -171,6 +172,37 @@ code{background:#0d1724;color:var(--aqua);padding:2px 6px;border-radius:5px}
 <h3 style="margin-top:25px">Candidate estratte</h3><div id="analysis-candidates"></div>
 <p class="small muted">Solo le candidate marcate come fatto e accettate dall'amministratore entrano nell'elenco delle affermazioni da verificare. L'accettazione non costituisce conferma della loro verità.</p>
 </div>
+</section>
+<section class="hidden" id="view-documents">
+  <div class="panel">
+    <h2>Documenti e confronto con le affermazioni</h2>
+    <p class="muted">Registra un estratto fedele di un documento pubblico che hai verificato, indicando il punto esatto dove compare. AFONDO non scarica pagine o documenti da URL non autorizzati.</p>
+    <div class="notice">Un documento deve essere controllato da una persona diversa da chi lo ha registrato. L'AI può individuare differenze tra cifre e anni, ma non stabilisce che un giornalista abbia mentito o che una notizia sia falsa.</div>
+    <form id="doc-form">
+      <div class="formgrid">
+        <div class="field span2"><label for="doc-title">Titolo del documento</label><input id="doc-title" required minlength="12" maxlength="300" placeholder="Es. Comunicato ufficiale sull'indice dei prezzi"></div>
+        <div class="field span2"><label for="doc-url">URL HTTPS della fonte</label><input id="doc-url" type="url" required placeholder="https://..."></div>
+        <div class="field"><label for="doc-publisher">Ente / editore</label><input id="doc-publisher" required minlength="3" maxlength="160"></div>
+        <div class="field"><label for="doc-group">Gruppo originale della prova</label><input id="doc-group" required minlength="3" maxlength="160" placeholder="Es. ISTAT"></div>
+        <div class="field"><label for="doc-kind">Tipo di fonte</label><select id="doc-kind"><option value="primary">Primaria</option><option value="secondary">Secondaria</option></select></div>
+        <div class="field"><label for="doc-date">Data di pubblicazione (facoltativa)</label><input id="doc-date" type="date"></div>
+        <div class="field span2"><label for="doc-locator">Posizione precisa</label><input id="doc-locator" required minlength="3" maxlength="240" placeholder="Pagina 4, tabella 2, paragrafo 3..."></div>
+        <div class="field span2"><label for="doc-excerpt">Estratto documentale (massimo 4500 caratteri)</label><textarea id="doc-excerpt" rows="5" minlength="40" maxlength="4500" required placeholder="Riporta fedelmente solo il passaggio necessario al confronto, nei limiti del diritto di citazione."></textarea></div>
+        <div class="field span2"><label for="doc-permission">Base per conservare e utilizzare questo estratto</label><textarea id="doc-permission" rows="2" minlength="20" maxlength="800" required placeholder="Es. documento pubblico riutilizzabile / licenza / permesso documentato"></textarea></div>
+        <div class="field"><label for="doc-recorder">Registrato da</label><input id="doc-recorder" required minlength="2" maxlength="120"></div>
+      </div>
+      <div class="actions"><button type="submit" class="primary">Registra documento in revisione</button><button type="button" id="doc-refresh" class="secondary">Aggiorna</button></div>
+    </form>
+  </div>
+  <div class="panel">
+    <h2>Documenti registrati</h2>
+    <p class="muted small">Prima dell'approvazione, confronta l'estratto con il documento originale. La verifica non è automatica.</p>
+    <div id="doc-list" class="list" aria-live="polite"></div>
+  </div>
+  <div class="panel">
+    <div class="toolbar"><div><h2>Confronti preparati</h2><p class="muted small">Corrispondenze testuali e differenze numeriche/temporali, senza verdetto automatico.</p></div><button id="context-refresh" type="button" class="secondary">Aggiorna confronti</button></div>
+    <div id="context-list" class="list" aria-live="polite"></div>
+  </div>
 </section>
 <section class="hidden" id="view-preanalysis">
 <div class="panel">
