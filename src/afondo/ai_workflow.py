@@ -95,6 +95,10 @@ def _complete(run_id: str, result: dict) -> None:
                 # Metadata leads are *never* accepted evidence; title overlap
                 # only prepares a reading list for subsequent human fact-check.
                 save_leads(conn, candidate_id, item["claim"])
+        # Match only previously approved, manually supplied source excerpts.
+        # The result stays in an internal queue; it cannot alter article scores.
+        from afondo.context_workbench import scan_for_run
+        scan_for_run(conn, run_id)
         conn.execute(
             """UPDATE ai_analysis_runs
                SET status='completed', finished_at=?, input_tokens=?, output_tokens=?,
