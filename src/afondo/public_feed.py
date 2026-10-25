@@ -96,8 +96,14 @@ def _claim_assessments(conn, article_id: str) -> dict:
     for claim in claims:
         evidence = [
             dict(row) for row in conn.execute(
-                "SELECT stance, source_kind, source_group, review_status "
-                "FROM evidence WHERE claim_id=?", (claim["id"],)
+                """SELECT e.stance, e.source_kind, e.source_group,
+                          CASE WHEN l.match_id IS NOT NULL
+                            AND (d.status IS NULL OR d.status != 'approved')
+                            THEN 'pending' ELSE e.review_status END AS review_status
+                   FROM evidence e
+                   LEFT JOIN document_evidence_links l ON l.evidence_id=e.id
+                   LEFT JOIN evidence_documents d ON d.id=l.document_id
+                   WHERE e.claim_id=?""", (claim["id"],)
             ).fetchall()
         ]
         results.append(score_claim(evidence))
