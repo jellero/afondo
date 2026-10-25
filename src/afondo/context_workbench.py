@@ -14,6 +14,7 @@ from datetime import datetime, timezone
 import json
 import re
 from uuid import uuid4
+from urllib.parse import urldefrag
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field, HttpUrl
@@ -94,6 +95,10 @@ def match_candidate(candidate: dict, document: dict) -> dict | None:
 
 
 def _suggest(conn, candidate: dict, document: dict) -> bool:
+    # An article cannot count as an external documentary reference to itself.
+    original = candidate.get("article_source_url")
+    if original and urldefrag(original)[0].rstrip("/") == urldefrag(document["url"])[0].rstrip("/"):
+        return False
     comparison = match_candidate(candidate, document)
     if comparison is None:
         return False
@@ -117,7 +122,8 @@ def scan_for_document(conn, document_id: str) -> int:
     if not doc:
         return 0
     candidates = conn.execute(
-        """SELECT c.id,c.quote,c.normalized_claim FROM ai_candidates c
+        """SELECT c.id,c.quote,c.normalized_claim,a.source_url AS article_source_url
+           FROM ai_candidates c JOIN articles a ON a.id=c.article_id
            WHERE c.kind='factual' ORDER BY c.rowid DESC LIMIT 500"""
     ).fetchall()
     return sum(bool(_suggest(conn, dict(item), dict(doc))) for item in candidates)
@@ -129,7 +135,9 @@ def scan_for_run(conn, run_id: str) -> int:
            ORDER BY created_at DESC LIMIT 200"""
     ).fetchall()
     candidates = conn.execute(
-        "SELECT id,quote,normalized_claim FROM ai_candidates WHERE kind='factual' AND run_id=?",
+        """SELECT c.id,c.quote,c.normalized_claim,a.source_url AS article_source_url
+           FROM ai_candidates c JOIN articles a ON a.id=c.article_id
+           WHERE c.kind='factual' AND c.run_id=?""",
         (run_id,),
     ).fetchall()
     return sum(
