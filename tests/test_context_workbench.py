@@ -227,3 +227,25 @@ def test_source_excerpt_matching_and_evidence_review(monkeypatch, tmp_path):
             json={"decision": "accepted"},
         )
         assert blocked.status_code == 409
+
+
+def test_article_cannot_be_a_documentary_reference_to_itself():
+    from afondo.context_workbench import match_candidate, _suggest
+    from unittest.mock import Mock
+
+    original = {
+        "id": "candidate-1",
+        "quote": "I prezzi energia elettrica sono aumentati nel 2025",
+        "normalized_claim": "Prezzi energia elettrica aumentati nel 2025",
+        "article_source_url": "https://example.com/article",
+    }
+    copied = {
+        "id": "document-1",
+        "url": "https://example.com/article#paragraph4",
+        "excerpt": "I prezzi energia elettrica sono aumentati nel 2025. "
+                   "Il giornale ripete lo stesso titolo senza fonti esterne.",
+    }
+    assert match_candidate(original, copied) is not None
+    fake_conn = Mock()
+    assert _suggest(fake_conn, original, copied) is False
+    fake_conn.execute.assert_not_called()
