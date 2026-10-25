@@ -49,7 +49,7 @@ function tab(name) {
   for (const button of document.querySelectorAll("[data-tab]")) {
     button.setAttribute("aria-selected", String(button.dataset.tab === name));
   }
-  for (const section of ["overview", "sources", "ai", "analysis", "preanalysis", "editorial", "monitor"]) {
+  for (const section of ["overview", "sources", "ai", "analysis", "documents", "preanalysis", "editorial", "monitor"]) {
     $("view-" + section).classList.toggle("hidden", section !== name);
   }
   if (name === "monitor") renderMonitor();
@@ -102,6 +102,7 @@ async function reloadAll() {
   await reloadArticleQueue();
   await reloadEditorial();
   await reloadRightsAndAttribution();
+  await reloadWorkbench();
 }
 
 function renderSources() {
@@ -581,3 +582,181 @@ $("at-form").addEventListener("submit",async event=>{
   flash("Attribuzione registrata.");await reloadRightsAndAttribution();
  }catch(error){flash(error.message,true)}
 });
+
+
+function externalLink(url, text) {
+  let valid = null;
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol === "https:" || parsed.protocol === "http:") valid = parsed.href;
+  } catch {}
+  if (!valid) return make("span","muted small","Link non disponibile");
+  const link=make("a","",text);
+  link.href=valid;link.target="_blank";link.rel="noopener noreferrer";
+  return link;
+}
+async function reloadWorkbench() {
+  try{
+    const [docs,comparisons]=await Promise.all([
+      api("/documents"), api("/context-queue?limit=80"),
+    ]);
+    renderDocuments(docs.items||[]);
+    renderComparisons(comparisons.items||[]);
+  }catch(error) {
+    $("doc-list").replaceChildren(make("p","muted","Errore: "+error.message));
+    $("context-list").replaceChildren();
+  }
+}
+function renderDocuments(items) {
+  const target=$("doc-list");target.replaceChildren();
+  if(!items.length) {
+    target.append(make("p","muted","Nessun estratto registrato: aggiungi il primo documento."));
+    return;
+  }
+  for(const d of items) {
+    const box=make("div","panel");
+    const state=make("span","pill "+(d.status==="approved"?"green":"yellow"),d.status);
+    const title=make("strong","",d.title);
+    box.append(state,title,make("p","small muted",d.publisher+" · "+d.source_kind+" · "+d.locator));
+    box.append(externalLink(d.url,"Apri documento originale ↗"));
+    const excerpt=make("details","");
+    excerpt.append(make("summary","small","Leggi l'estratto registrato"));
+    excerpt.append(make("p","small muted",d.excerpt));
+    excerpt.append(make("p","small muted","Permessi: "+d.permission_reference));
+    box.append(excerpt);
+    if(d.status==="submitted"||d.status==="approved"){
+      const row=make("div","actions");
+      const actions=d.status==="submitted"?
+        [["approve","Approva dopo controllo"],["reject","Rifiuta"]]:
+        [["retire","Ritira documento"]];
+      for(const [decision,label] of actions){
+        const b=make("button",decision==="approve"?"primary":"secondary",label);
+        b.type="button";
+        b.addEventListener("click",async()=>{
+          const name=window.prompt("Revisore (diverso da chi ha registrato il documento):");
+          if(!name) return;
+          const note=window.prompt("Motivazione documentata del controllo (minimo 25 caratteri):");
+          if(!note)return;
+          b.disabled=true;
+          try{
+            const data=await api("/documents/"+encodeURIComponent(d.id)+"/review",{
+              method:"POST",
+              body:{decision,checked_by:name.trim(),review_note:note.trim()}
+            });
+            flash("Documento "+data.status+". Possibili confronti: "+data.possible_matches);
+            await reloadWorkbench();
+          }catch(error){flash(error.message,true);b.disabled=false}
+        });
+        row.append(b);
+      }
+      box.append(row);
+    }
+    target.append(box);
+  }
+}
+function renderComparisons(items) {
+  const target=$("context-list");target.replaceChildren();
+  if(!items.length){
+    target.append(make("p","muted",
+      "Nessun confronto disponibile. Occorrono un estratto revisionato e un'affermazione fattuale estratta dall'AI."));
+    return;
+  }
+  for(const m of items) {
+    const card=make("div","panel");
+    card.append(make("span","pill "+(m.review_status==="relevant"?"green":""),
+       "Confronto "+m.review_status));
+    card.append(make("strong","",m.normalized_claim));
+    card.append(make("p","small muted","Originale: «"+m.quote+"»"));
+    card.append(make("p","small muted","Documento: "+m.title+" · "+m.publisher));
+    card.append(externalLink(m.url,"Apri l'originale ("+m.locator+") ↗"));
+    const details=make("details","");
+    details.append(make("summary","small","Leggi l'estratto controllato"));
+    details.append(make("p","small muted",m.excerpt));
+    card.append(details);
+    if(m.signals?.length) {
+      const warnings=make("div","notice");
+      warnings.append(make("strong","","Differenze letterali da esaminare"));
+      for(const signal of m.signals) {
+        const detail=make("p","small",signal.message);
+        detail.append(make("span","",
+          " Testo: "+signal.claim_values.join(", ")+" · Documento: "+signal.source_values.join(", ")));
+        warnings.append(detail);
+      }
+      card.append(warnings);
+    }else{
+      card.append(make("p","small muted",
+       "Non sono state rilevate differenze esplicite di cifre o anni. Questo NON dimostra che la frase sia corretta."));
+    }
+    card.append(make("p","small muted",
+      "Termini condivisi: "+m.overlap_terms.join(", ")+" · Pertinenza lessicale: "+
+      Math.round(m.match_fraction*100)+"%"));
+    if(m.review_status==="pending"){
+      const row=make("div","actions");
+      for(const [decision,label] of [["relevant","Pertinente"],["irrelevant","Non pertinente"]]){
+        const b=make("button",decision==="relevant"?"primary":"secondary",label);
+        b.type="button";
+        b.addEventListener("click",async()=>{
+          const reviewer=window.prompt("Nome revisore:");
+          if(!reviewer)return;
+          const reason=window.prompt("Motivo del giudizio (minimo 20 caratteri):");
+          if(!reason)return;
+          b.disabled=true;
+          try{
+            await api("/context-matches/"+encodeURIComponent(m.id)+"/decision",{
+              method:"POST",
+              body:{decision,reviewed_by:reviewer.trim(),review_note:reason.trim()}
+            });
+            flash("Pertinenza salvata senza attribuire verità.");
+            await reloadWorkbench();
+          }catch(error){flash(error.message,true);b.disabled=false}
+        });
+        row.append(b);
+      }
+      card.append(row);
+    }else if(m.review_status==="relevant"&&m.claim_id){
+      const wrap=make("div","field");
+      const label=make("label","","Posizione della prova (da verificare separatamente)");
+      const select=make("select","");
+      for(const [value,text] of [["unclear","Non conclusiva"],["supports","A sostegno"],["refutes","Contraria"]]){
+        const option=make("option","",text);option.value=value;select.append(option);
+      }
+      wrap.append(label,select);
+      const why=make("textarea","");
+      why.rows=2;why.placeholder="Spiega perché il documento sostiene, contraddice o non risolve l'affermazione.";
+      wrap.append(why);
+      const b=make("button","secondary","Crea prova in attesa di revisione");
+      b.type="button";
+      b.addEventListener("click",async()=>{
+        if(why.value.trim().length<30){flash("Scrivi una motivazione di almeno 30 caratteri.",true);return;}
+        b.disabled=true;
+        try{
+          await api("/context-matches/"+encodeURIComponent(m.id)+"/evidence-proposal",{
+            method:"POST",body:{stance:select.value,reason:why.value.trim()}
+          });
+          flash("Prova inserita in attesa di revisione. Nessun punteggio cambiato.");
+          b.textContent="Proposta registrata";
+        }catch(error){flash(error.message,true);b.disabled=false}
+      });
+      wrap.append(b);card.append(wrap);
+    }
+    target.append(card);
+  }
+}
+$("doc-form").addEventListener("submit",async event=>{
+ event.preventDefault();
+ const body={
+  title:value("doc-title"),url:value("doc-url"),
+  publisher:value("doc-publisher"),source_group:value("doc-group"),
+  source_kind:value("doc-kind"),excerpt:value("doc-excerpt"),
+  locator:value("doc-locator"),permission_reference:value("doc-permission"),
+  recorded_by:value("doc-recorder"),publication_date:value("doc-date")||null
+ };
+ try {
+  await api("/documents",{method:"POST",body});
+  $("doc-form").reset();
+  flash("Documento registrato; serve una revisione indipendente.");
+  await reloadWorkbench();
+ }catch(error){flash(error.message,true)}
+});
+$("doc-refresh").addEventListener("click",reloadWorkbench);
+$("context-refresh").addEventListener("click",reloadWorkbench);
