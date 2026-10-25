@@ -253,6 +253,19 @@ def review_evidence(
     if not x_review_token or not secrets.compare_digest(x_review_token, configured):
         raise HTTPException(status_code=403, detail="Forbidden")
     with connection() as conn:
+        conn.execute("BEGIN IMMEDIATE")
+        if payload.decision == "accepted":
+            check = conn.execute(
+                """SELECT d.status FROM document_evidence_links l
+                   JOIN evidence_documents d ON d.id=l.document_id
+                   WHERE l.evidence_id=?""",
+                (evidence_id,),
+            ).fetchone()
+            if check and check["status"] != "approved":
+                raise HTTPException(
+                    status_code=409,
+                    detail="Evidence document is no longer approved; cannot accept",
+                )
         result = conn.execute(
             "UPDATE evidence SET review_status = ?, reviewed_at = ? WHERE id = ?",
             (payload.decision, timestamp(), evidence_id),
