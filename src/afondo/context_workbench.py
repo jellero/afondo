@@ -124,7 +124,8 @@ def scan_for_document(conn, document_id: str) -> int:
     candidates = conn.execute(
         """SELECT c.id,c.quote,c.normalized_claim,a.source_url AS article_source_url
            FROM ai_candidates c JOIN articles a ON a.id=c.article_id
-           WHERE c.kind='factual' ORDER BY c.rowid DESC LIMIT 500"""
+           WHERE c.kind='factual' AND c.review_status!='rejected'
+           ORDER BY c.rowid DESC LIMIT 500"""
     ).fetchall()
     return sum(bool(_suggest(conn, dict(item), dict(doc))) for item in candidates)
 
@@ -231,6 +232,7 @@ def context_queue(limit: int = Query(80,ge=1,le=200)):
                FROM document_claim_matches m
                JOIN ai_candidates c ON c.id=m.candidate_id
                JOIN evidence_documents d ON d.id=m.document_id AND d.status='approved'
+               WHERE c.review_status!='rejected'
                ORDER BY m.created_at DESC LIMIT ?""",
             (limit,),
         ).fetchall()
