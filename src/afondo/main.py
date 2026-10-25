@@ -21,6 +21,7 @@ from afondo.public_feed import router as public_feed_router
 from afondo.editorial_api import router as editorial_router
 from afondo.preanalysis import router as preanalysis_router
 from afondo.history import router as history_router, admin_router as attribution_router
+from afondo.context_workbench import router as context_router
 
 
 def timestamp() -> str:
@@ -49,6 +50,7 @@ app.include_router(editorial_router)
 app.include_router(preanalysis_router)
 app.include_router(history_router)
 app.include_router(attribution_router)
+app.include_router(context_router)
 
 
 @app.get("/")
