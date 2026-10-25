@@ -187,7 +187,7 @@ def review_document(document_id: str, payload: ReviewInput):
     with connection() as conn:
         conn.execute("BEGIN IMMEDIATE")
         doc = conn.execute(
-            "SELECT status FROM evidence_documents WHERE id=?", (document_id,),
+            "SELECT status,recorded_by FROM evidence_documents WHERE id=?", (document_id,),
         ).fetchone()
         if not doc:
             raise HTTPException(status_code=404,detail="Document not found")
@@ -195,6 +195,11 @@ def review_document(document_id: str, payload: ReviewInput):
             status in ("approved","rejected") and doc["status"] != "submitted"
         ):
             raise HTTPException(status_code=409,detail="Document already reviewed or retired")
+        if (status == "approved"
+                and doc["recorded_by"].strip().casefold() == payload.checked_by.strip().casefold()):
+            raise HTTPException(
+                status_code=409, detail="A different reviewer must inspect the source excerpt"
+            )
         conn.execute(
             """UPDATE evidence_documents SET status=?,reviewed_at=?,
                reviewed_by=?,review_note=? WHERE id=?""",
@@ -273,6 +278,12 @@ def promote_to_pending_evidence(match_id: str, payload: EvidenceProposal):
                 status_code=409,
                 detail="Review the match and accept the factual claim first",
             )
+        duplicate = conn.execute(
+            "SELECT evidence_id FROM document_evidence_links WHERE match_id=?",
+            (match_id,),
+        ).fetchone()
+        if duplicate:
+            raise HTTPException(status_code=409,detail="Match already has an evidence proposal")
         evidence_id = str(uuid4())
         note = (
             "Documento revisionato, posizione: " + row["locator"]
