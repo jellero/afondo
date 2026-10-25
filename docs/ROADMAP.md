@@ -53,6 +53,19 @@
 - [ ] Qualità editoriale e revisione doppia sulle segnalazioni reputazionali
 - [ ] Test runtime, accessibilità e scalabilità del nuovo portale
 
+## Milestone 0.8 — Verifica documentale revisionata
+
+- [x] Archivio di brevi estratti con URL, locator, provenienza e base d'uso
+- [x] Due fasi di registrazione e approvazione documentale
+- [x] Abbinamento automatico di documenti approvati alle candidate AI
+- [x] Segnali deterministici su differenze esplicite di anni e quantità
+- [x] Revisione della pertinenza e promozione a prova esclusivamente pending
+- [x] Ritiro di documenti e sospensione delle prove collegate nello scoring
+- [ ] Acquisizione da API ufficiali licenziate e lettura documenti originali
+- [ ] Confronto semantico controllato: denominatori, popolazioni, metodi, timeframe
+- [ ] Audit revisioni con identità reali, MFA e gestione delle contestazioni
+- [ ] Calibrazione tramite corpus umano e test completi runtime/CI
+
 ## Milestone 1 — Motore serio di verifica
 
 - [ ] PostgreSQL, Alembic e storage dei documenti con provenienza
