@@ -141,7 +141,10 @@ def _published_rows() -> list[dict]:
                       v.outlet_confirmed, v.byline_confirmed,
                       (SELECT COUNT(*) FROM claims c
                        JOIN evidence ev ON ev.claim_id=c.id
-                       WHERE c.article_id=a.id AND ev.review_status='accepted')
+                       LEFT JOIN document_evidence_links l ON l.evidence_id=ev.id
+                       LEFT JOIN evidence_documents d ON d.id=l.document_id
+                       WHERE c.article_id=a.id AND ev.review_status='accepted'
+                         AND (l.match_id IS NULL OR d.status='approved'))
                        AS accepted_evidence_count,
                       (SELECT COUNT(*) FROM editorial_review_events ev
                        WHERE ev.article_id=a.id AND ev.event_kind='revised')
